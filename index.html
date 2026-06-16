@@ -6,22 +6,22 @@
 <title>靓图 - 在线图片处理工具箱</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0f0f0f; color:#e0e0e0; min-height:100vh; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#fff; color:#333; min-height:100vh; }
 .header { text-align:center; padding:60px 20px 40px; }
 .header h1 { font-size:3em; background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:12px; }
-.header p { color:#888; font-size:1.1em; }
+.header p { color:#6b7280; font-size:1.1em; }
 .tools { max-width:900px; margin:0 auto; padding:0 20px 60px; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
-.card { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:16px; padding:32px 24px; cursor:pointer; transition:all 0.2s; text-decoration:none; color:inherit; display:block; }
-.card:hover { border-color:#a78bfa; transform:translateY(-2px); box-shadow:0 8px 30px rgba(167,139,250,0.15); }
+.card { background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:32px 24px; cursor:pointer; transition:all 0.2s; text-decoration:none; color:inherit; display:block; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+.card:hover { border-color:#a78bfa; transform:translateY(-2px); box-shadow:0 8px 30px rgba(167,139,250,0.12); }
 .card .icon { font-size:2.5em; margin-bottom:16px; }
-.card h2 { font-size:1.3em; margin-bottom:8px; }
-.card p { color:#888; font-size:0.95em; line-height:1.6; }
-.card .tag { display:inline-block; margin-top:16px; padding:4px 12px; border-radius:20px; font-size:0.8em; background:rgba(167,139,250,0.15); color:#a78bfa; }
-.card.coming-soon { opacity:0.5; pointer-events:none; }
-.card.coming-soon:hover { border-color:#2a2a2a; transform:none; box-shadow:none; }
-.card.coming-soon .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:0.7em; background:#333; color:#888; margin-bottom:12px; }
-.footer { text-align:center; padding:40px 20px; color:#555; font-size:0.85em; border-top:1px solid #1a1a1a; }
-.footer a { color:#a78bfa; text-decoration:none; }
+.card h2 { font-size:1.3em; margin-bottom:8px; color:#1f2937; }
+.card p { color:#6b7280; font-size:0.95em; line-height:1.6; }
+.card .tag { display:inline-block; margin-top:16px; padding:4px 12px; border-radius:20px; font-size:0.8em; background:rgba(167,139,250,0.1); color:#7c3aed; }
+.card.coming-soon { opacity:0.55; pointer-events:none; }
+.card.coming-soon:hover { border-color:#e5e7eb; transform:none; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+.card.coming-soon .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:0.7em; background:#f3f4f6; color:#9ca3af; margin-bottom:12px; }
+.footer { text-align:center; padding:40px 20px; color:#9ca3af; font-size:0.85em; border-top:1px solid #f3f4f6; }
+.footer a { color:#7c3aed; text-decoration:none; }
 </style>
 </head>
 <body>
@@ -35,7 +35,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <a href="sticker/" class="card">
     <div class="icon">🎨</div>
     <h2>微信表情包工具箱</h2>
-    <p>裁剪 · 白底 · 文字引擎 · 对话气泡 · 表情拼贴 · 搞怪滤镜 · GIF编辑 · 格式转换</p>
+    <p>拖入图片，裁剪尺寸、加文字气泡、拼贴滤镜，一键生成合规表情包</p>
     <span class="tag">已上线</span>
   </a>
 
@@ -43,16 +43,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <div class="badge">即将推出</div>
     <div class="icon">🗜</div>
     <h2>图片压缩</h2>
-    <p>质量滑块 · 实时对比 · 目标体积 · 多格式输出</p>
-    <span class="tag">第二步</span>
+    <p>拖入图片一键瘦身，保持清晰度，体积减少 80%</p>
+    <span class="tag">开发中</span>
   </div>
 
   <div class="card coming-soon">
     <div class="badge">10天后</div>
     <div class="icon">🛒</div>
     <h2>拼多多商品主图</h2>
-    <p>1:1裁剪 · 纯白底 · 800×800 · 一键合规</p>
-    <span class="tag">第三步</span>
+    <p>自动裁剪 1:1，纯白底处理，800×800 一键上架</p>
+    <span class="tag">开发中</span>
   </div>
 </div>
 
