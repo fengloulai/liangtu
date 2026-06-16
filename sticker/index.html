@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>表情包工具箱 - 靓图</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="../" class="logo">← 靓图</a>
+  <h1>🎨 微信表情包工具箱</h1>
+  <p>上传一张图片，开始编辑 · 全部在浏览器本地处理</p>
+</header>
+
+<div class="main-layout">
+  <!-- 左侧：原图 -->
+  <div class="panel panel-original" id="panelOriginal">
+    <div class="panel-title">原图</div>
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-hint">📁 拖入图片<br>或点击上传</div>
+      <input type="file" id="fileInput" accept="image/*,video/mp4,video/quicktime" hidden>
+      <canvas id="canvasOriginal"></canvas>
+    </div>
+    <div class="image-info" id="imageInfo"></div>
+  </div>
+
+  <!-- 右侧：编辑预览 -->
+  <div class="panel panel-preview" id="panelPreview">
+    <div class="panel-title">编辑预览 <span id="editLabel"></span></div>
+    <div class="preview-container">
+      <canvas id="canvasPreview"></canvas>
+      <div class="preview-placeholder" id="previewPlaceholder">上传图片后开始编辑</div>
+    </div>
+  </div>
+</div>
+
+<!-- 工具栏 -->
+<div class="toolbar">
+  <div class="tool-tabs" id="toolTabs">
+    <button class="tab active" data-tool="crop">✂ 裁剪缩放</button>
+    <button class="tab" data-tool="text">🖊 文字引擎</button>
+    <button class="tab" data-tool="bubble">💬 对话气泡</button>
+    <button class="tab" data-tool="collage">🖼 表情拼贴</button>
+    <button class="tab" data-tool="filter">🎭 搞怪滤镜</button>
+    <button class="tab" data-tool="bg">🔲 白底处理</button>
+    <button class="tab" data-tool="convert">🔄 格式转换</button>
+  </div>
+
+  <!-- 各工具面板 -->
+  <div class="tool-panels">
+
+    <!-- 裁剪缩放 -->
+    <div class="tool-panel active" id="panelCrop">
+      <div class="tool-row">
+        <button class="btn" onclick="setCropPreset(240,240)">240×240 表情主图</button>
+        <button class="btn" onclick="setCropPreset(120,120)">120×120 缩略图</button>
+        <button class="btn" onclick="setCropPreset(50,50)">50×50 图标</button>
+      </div>
+      <div class="tool-row">
+        <label>宽: <input type="number" id="cropW" value="240" min="1" max="4096" class="input-sm"></label>
+        <label>高: <input type="number" id="cropH" value="240" min="1" max="4096" class="input-sm"></label>
+        <button class="btn btn-primary" onclick="applyCrop()">裁剪</button>
+        <button class="btn" onclick="applyResize()">缩放</button>
+      </div>
+    </div>
+
+    <!-- 文字引擎 -->
+    <div class="tool-panel" id="panelText">
+      <div class="tool-row">
+        <input type="text" id="textInput" placeholder="输入文字..." class="input-lg">
+      </div>
+      <div class="tool-row style-grid" id="textStyles">
+        <button class="style-btn" data-style="white-black">白字黑描边<br><small>熊猫头经典</small></button>
+        <button class="style-btn" data-style="yellow-red">黄字红描边<br><small>暴漫咆哮体</small></button>
+        <button class="style-btn" data-style="vertical">竖排咆哮<br><small>我！！！不！！！</small></button>
+        <button class="style-btn" data-style="shadow">彩色阴影<br><small>可爱女生风</small></button>
+        <button class="style-btn" data-style="small-gray">小字备注<br><small>小声补充</small></button>
+      </div>
+      <div class="tool-row">
+        <button class="btn btn-primary" onclick="applyText()">加到图片上</button>
+        <button class="btn" onclick="clearText()">清除文字</button>
+      </div>
+      <p class="hint">文字加到图片后可拖拽调整位置</p>
+    </div>
+
+    <!-- 对话气泡 -->
+    <div class="tool-panel" id="panelBubble">
+      <div class="tool-row">
+        <input type="text" id="bubbleText" placeholder="气泡里的话..." class="input-lg">
+      </div>
+      <div class="tool-row style-grid" id="bubbleStyles">
+        <button class="style-btn" data-bubble="wechat-green">微信绿气泡<br><small>自己的消息</small></button>
+        <button class="style-btn" data-bubble="wechat-white">微信白气泡<br><small>对方的消息</small></button>
+        <button class="style-btn" data-bubble="comic">漫画气泡<br><small>经典风格</small></button>
+        <button class="style-btn" data-bubble="explosion">爆炸气泡<br><small>愤怒激动</small></button>
+        <button class="style-btn" data-bubble="thought">想法气泡<br><small>云朵形状</small></button>
+      </div>
+      <div class="tool-row">
+        <label>位置: <select id="bubblePos"><option value="top">上方</option><option value="bottom">下方</option></select></label>
+        <button class="btn btn-primary" onclick="applyBubble()">添加气泡</button>
+      </div>
+    </div>
+
+    <!-- 表情拼贴 -->
+    <div class="tool-panel" id="panelCollage">
+      <div class="tool-row">
+        <p class="hint">先上传第一张图（上面已上传），再选第二张图：</p>
+      </div>
+      <div class="tool-row">
+        <input type="file" id="collageFile2" accept="image/*" hidden>
+        <button class="btn" onclick="document.getElementById('collageFile2').click()">📁 选第二张图</button>
+        <span id="collageFile2Name" style="color:#888;font-size:0.85em;"></span>
+      </div>
+      <div class="tool-row style-grid" id="collageStyles">
+        <button class="style-btn" data-collage="left-right">左右对比<br><small>你以为 vs 实际</small></button>
+        <button class="style-btn" data-collage="top-bottom">上下对比<br><small>周一 vs 周五</small></button>
+        <button class="style-btn" data-collage="grid4">四宫格<br><small>2×2 拼贴</small></button>
+        <button class="style-btn" data-collage="corner">对角<br><small>大图+角落小图</small></button>
+      </div>
+      <div class="tool-row">
+        <button class="btn btn-primary" onclick="applyCollage()">拼贴</button>
+      </div>
+    </div>
+
+    <!-- 搞怪滤镜 -->
+    <div class="tool-panel" id="panelFilter">
+      <div class="tool-row style-grid" id="filterStyles">
+        <button class="style-btn" data-filter="lineart">黑白线稿<br><small>灵魂画手</small></button>
+        <button class="style-btn" data-filter="oldstyle">高饱和老年<br><small>长辈表情包</small></button>
+        <button class="style-btn" data-filter="pixel">像素风<br><small>复古游戏</small></button>
+        <button class="style-btn" data-filter="rough">毛边粗糙<br><small>低清重印</small></button>
+        <button class="style-btn" data-filter="emboss">浮雕<br><small>锦旗奖状</small></button>
+      </div>
+      <div class="tool-row">
+        <label>强度: <input type="range" id="filterStrength" min="10" max="100" value="50" class="slider"></label>
+      </div>
+      <div class="tool-row">
+        <button class="btn btn-primary" onclick="applyFilter()">应用滤镜</button>
+        <button class="btn" onclick="resetFilter()">撤销滤镜</button>
+      </div>
+      <p class="hint">滤镜效果叠加在原图上，点"撤销滤镜"回到上一步</p>
+    </div>
+
+    <!-- 白底处理 -->
+    <div class="tool-panel" id="panelBg">
+      <div class="tool-row">
+        <button class="btn btn-primary" onclick="applyWhiteBg()">🔲 杂底→纯白底</button>
+        <button class="btn" onclick="applyTransparentToWhite()">🔄 透明→白底（防微信黑底）</button>
+      </div>
+      <p class="hint">白底处理：检测图片边缘颜色，将背景替换为纯白 #FFFFFF<br>透明→白底：在透明PNG下垫一层白色，防微信渲染黑底</p>
+    </div>
+
+    <!-- 格式转换 -->
+    <div class="tool-panel" id="panelConvert">
+      <div class="tool-row">
+        <label>输出格式:
+          <select id="convertFormat">
+            <option value="image/png">PNG</option>
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/webp">WebP</option>
+            <option value="image/gif">GIF</option>
+          </select>
+        </label>
+        <label>质量: <input type="range" id="convertQuality" min="10" max="100" value="92" class="slider"></label>
+      </div>
+      <div class="tool-row">
+        <button class="btn btn-primary" onclick="applyConvert()">转换并下载</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 底部状态栏 -->
+<div class="status-bar">
+  <span id="statusDims">- × -</span>
+  <span id="statusFormat">-</span>
+  <span id="statusSize">-</span>
+  <span style="flex:1"></span>
+  <button class="btn" onclick="downloadImage()">💾 下载图片</button>
+  <button class="btn btn-reset" onclick="resetAll()">🔄 开始新图</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
