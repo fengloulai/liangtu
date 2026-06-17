@@ -329,7 +329,8 @@ document.querySelector('#textStyles .style-btn[data-style="white-black"]')?.clas
 // ===== 反馈功能 =====
 function openFeedback() {
   document.getElementById('feedbackModal').classList.add('show');
-  document.getElementById('feedbackText').focus();
+  var ta = document.querySelector('#feedbackModal textarea[name="message"]');
+  if (ta) ta.focus();
 }
 
 function closeFeedback(event) {
@@ -338,20 +339,13 @@ function closeFeedback(event) {
   }
 }
 
-function copyEmail() {
-  navigator.clipboard.writeText('599492435@qq.com').then(() => {
-    showToast('📋 邮箱已复制！');
-  }).catch(() => {
-    showToast('复制失败，请手动复制');
-  });
-}
-
 // 表单提交：关闭弹窗 + 显示成功提示
 document.getElementById('feedbackForm').addEventListener('submit', function() {
   setTimeout(function() {
     document.getElementById('feedbackModal').classList.remove('show');
-    document.getElementById('feedbackText').value = '';
-    showToast('✅ 反馈已发送，感谢你的建议！');
+    var ta = document.querySelector('#feedbackModal textarea[name="message"]');
+    if (ta) ta.value = '';
+    showToast('已发送，感谢反馈！');
   }, 300);
 });
 

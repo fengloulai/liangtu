@@ -153,17 +153,6 @@
     cursor: pointer; color: #9ca3af; padding: 4px 8px;
   }
   .modal-close:hover { color: #374151; }
-  .email-line {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 14px; font-size: 0.92em; color: #6b7280;
-  }
-  .email-line strong { color: #7c3aed; }
-  .btn-copy {
-    background: #f3f4f6; border: 1px solid #e5e7eb;
-    border-radius: 6px; padding: 2px 10px; font-size: 0.85em;
-    cursor: pointer; white-space: nowrap;
-  }
-  .btn-copy:hover { background: #e5e7eb; }
   .modal-box textarea {
     width: 100%; margin-bottom: 14px;
     border: 1px solid #e5e7eb; border-radius: 8px;
@@ -355,18 +344,12 @@
       <h3>💬 建议反馈</h3>
       <button class="modal-close" onclick="closeFeedback()">✕</button>
     </div>
-    <div class="email-line">
-      📧 <strong>599492435@qq.com</strong>
-      <button class="btn-copy" onclick="copyEmail()">📋 复制</button>
-    </div>
-    <form id="feedbackForm" action="https://formsubmit.co/599492435@qq.com" method="POST">
-      <!-- 屏蔽FormSubmit默认的确认页，直接显示自定义提示 -->
+    <form id="feedbackForm" action="https://formsubmit.co/599492435@qq.com" method="POST" style="margin-top:4px">
+      <input type="hidden" name="_subject" value="靓图 - 用户反馈">
       <input type="hidden" name="_captcha" value="false">
       <input type="hidden" name="_template" value="table">
-      <input type="hidden" name="_subject" value="靓图 - 用户反馈">
-      <input type="hidden" name="_next" value="https://liangtu.cc/">
-      <textarea id="feedbackText" name="message" rows="4" placeholder="写下你的建议或问题..." required></textarea>
-      <button type="submit" class="btn-send">📧 发送反馈</button>
+      <textarea name="message" rows="4" placeholder="写下你的建议或问题..." required></textarea>
+      <button type="submit" class="btn-send">发送反馈</button>
     </form>
   </div>
 </div>
