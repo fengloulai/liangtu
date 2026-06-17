@@ -10,6 +10,7 @@ header p { color:#9ca3af; font-size:0.85em; }
 /* Main layout */
 .main-layout { display:flex; gap:16px; padding:16px; max-width:1200px; margin:0 auto; }
 .panel { flex:1; background:#fff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+#panelPreview { overflow:visible; position:relative; }
 .panel-title { padding:10px 16px; font-size:0.85em; color:#6b7280; border-bottom:1px solid #f3f4f6; }
 
 /* Drop zone */
@@ -22,17 +23,40 @@ header p { color:#9ca3af; font-size:0.85em; }
 
 .image-info { padding:8px 16px; border-top:1px solid #f3f4f6; font-size:0.8em; color:#9ca3af; }
 
-/* Toolbar */
+/* Toolbar (old) — keep for backward compat */
 .toolbar { border-top:1px solid #f3f4f6; padding:0 16px; background:#fff; }
 .tool-tabs { display:flex; gap:4px; padding:12px 0 8px; overflow-x:auto; }
 .tab { padding:8px 14px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; color:#6b7280; cursor:pointer; font-size:0.9em; white-space:nowrap; transition:all 0.15s; font-family:inherit; }
 .tab:hover { border-color:#a78bfa; color:#374151; background:#fafafe; }
 .tab.active { background:#ede9fe; border-color:#a78bfa; color:#7c3aed; }
 
-.tool-panels { padding-bottom:12px; }
-.tool-panel { display:none; }
-.tool-panel.active { display:block; }
-.tool-row { display:flex; gap:8px; align-items:center; padding:6px 0; flex-wrap:wrap; }
+/* Floating toolbar inside canvas */
+.floating-toolbar {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); z-index: 20;
+  display: flex; gap: 2px;
+  padding: 4px 8px; border-radius: 28px;
+  background: rgba(255,255,255,0.92); border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1); backdrop-filter: blur(8px);
+}
+.ft-btn {
+  width: 40px; height: 40px; border: none; border-radius: 50%;
+  background: transparent; color: #6b7280; cursor: pointer;
+  font-size: 1.2em; font-family: inherit; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.ft-btn:hover { background: #f3f4f6; color: #374151; }
+.ft-btn.active { background: #ede9fe; color: #7c3aed; }
+
+/* Tool popup — opens above floating toolbar */
+.tool-popup {
+  position: absolute; bottom: 64px; left: 12px; right: 12px; z-index: 19;
+  background: #fff; border: 1px solid #e5e7eb;
+  border-radius: 12px; box-shadow: 0 -2px 16px rgba(0,0,0,0.1);
+  padding: 12px; max-height: 260px; overflow-y: auto;
+  flex-direction: column; gap: 8px;
+  display: none;
+}
+.tool-popup.open { display: flex; }
 
 /* Buttons */
 .btn { padding:8px 16px; border:1px solid #d1d5db; border-radius:8px; background:#fff; color:#374151; cursor:pointer; font-size:0.9em; font-family:inherit; transition:all 0.15s; }
@@ -41,6 +65,8 @@ header p { color:#9ca3af; font-size:0.85em; }
 .btn-primary:hover { background:#8b5cf6; }
 .btn-reset { background:transparent; border-color:#d1d5db; color:#6b7280; }
 .btn-reset:hover { border-color:#ef4444; color:#ef4444; }
+.btn-undo, .btn-redo { font-size:1.1em; padding:4px 10px; }
+.btn-undo:hover, .btn-redo:hover { background:#f3f4f6; border-color:#a78bfa; }
 
 /* Style buttons */
 .style-grid { display:flex; gap:8px; flex-wrap:wrap; }

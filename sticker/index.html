@@ -175,11 +175,13 @@
 
 <!-- 底部状态栏 -->
 <div class="status-bar">
+  <button class="btn btn-undo" onclick="undo()" title="撤销 (Ctrl+Z)">↩</button>
+  <button class="btn btn-redo" onclick="redo()" title="重做 (Ctrl+Y)">↪</button>
   <span id="statusDims">- × -</span>
   <span id="statusFormat">-</span>
   <span id="statusSize">-</span>
   <span style="flex:1"></span>
-  <button class="btn" onclick="downloadImage()">💾 下载图片</button>
+  <button class="btn btn-primary" onclick="downloadImage()">💾 下载图片</button>
   <button class="btn btn-reset" onclick="resetAll()">🔄 开始新图</button>
 </div>
 
