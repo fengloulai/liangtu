@@ -359,8 +359,15 @@
       📧 <strong>599492435@qq.com</strong>
       <button class="btn-copy" onclick="copyEmail()">📋 复制</button>
     </div>
-    <textarea id="feedbackText" rows="4" placeholder="写下你的建议或问题..."></textarea>
-    <button class="btn-send" onclick="sendFeedback()">📧 通过邮箱发送</button>
+    <form id="feedbackForm" action="https://formsubmit.co/599492435@qq.com" method="POST">
+      <!-- 屏蔽FormSubmit默认的确认页，直接显示自定义提示 -->
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_subject" value="靓图 - 用户反馈">
+      <input type="hidden" name="_next" value="https://liangtu.cc/">
+      <textarea id="feedbackText" name="message" rows="4" placeholder="写下你的建议或问题..." required></textarea>
+      <button type="submit" class="btn-send">📧 发送反馈</button>
+    </form>
   </div>
 </div>
 

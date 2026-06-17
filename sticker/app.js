@@ -346,19 +346,14 @@ function copyEmail() {
   });
 }
 
-function sendFeedback() {
-  var text = document.getElementById('feedbackText').value.trim();
-  var subject = encodeURIComponent('靓图反馈');
-  var body = encodeURIComponent(text || '（用户未填写内容）');
-  window.location.href = 'mailto:599492435@qq.com?subject=' + subject + '&body=' + body;
-  if (!text) {
-    showToast('📧 正在打开邮箱...（建议填写内容以便我们更好理解你的需求）');
-  } else {
-    showToast('📧 正在打开邮箱...');
+// 表单提交：关闭弹窗 + 显示成功提示
+document.getElementById('feedbackForm').addEventListener('submit', function() {
+  setTimeout(function() {
     document.getElementById('feedbackModal').classList.remove('show');
     document.getElementById('feedbackText').value = '';
-  }
-}
+    showToast('✅ 反馈已发送，感谢你的建议！');
+  }, 300);
+});
 
 function showToast(msg) {
   var t = document.createElement('div');
