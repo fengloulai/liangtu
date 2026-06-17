@@ -325,3 +325,45 @@ function resetAll() {
 
 // ---- 初始化：选中文字引擎默认风格 ----
 document.querySelector('#textStyles .style-btn[data-style="white-black"]')?.classList.add('selected');
+
+// ===== 反馈功能 =====
+function openFeedback() {
+  document.getElementById('feedbackModal').classList.add('show');
+  document.getElementById('feedbackText').focus();
+}
+
+function closeFeedback(event) {
+  if (!event || event.target === document.getElementById('feedbackModal')) {
+    document.getElementById('feedbackModal').classList.remove('show');
+  }
+}
+
+function copyEmail() {
+  navigator.clipboard.writeText('599492435@qq.com').then(() => {
+    showToast('📋 邮箱已复制！');
+  }).catch(() => {
+    showToast('复制失败，请手动复制');
+  });
+}
+
+function sendFeedback() {
+  var text = document.getElementById('feedbackText').value.trim();
+  var subject = encodeURIComponent('靓图反馈');
+  var body = encodeURIComponent(text || '（用户未填写内容）');
+  window.location.href = 'mailto:599492435@qq.com?subject=' + subject + '&body=' + body;
+  if (!text) {
+    showToast('📧 正在打开邮箱...（建议填写内容以便我们更好理解你的需求）');
+  } else {
+    showToast('📧 正在打开邮箱...');
+    document.getElementById('feedbackModal').classList.remove('show');
+    document.getElementById('feedbackText').value = '';
+  }
+}
+
+function showToast(msg) {
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function() { t.remove(); }, 2500);
+}
