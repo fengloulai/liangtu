@@ -3,363 +3,388 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>靓图 - 微信表情包在线编辑器 | 免费图片处理</title>
-<meta name="description" content="在线微信表情包制作工具，上传图片即可裁剪尺寸、加文字，100%本地处理，图片不出电脑。">
-<meta name="keywords" content="微信表情包制作,表情包在线编辑器,图片裁剪,表情包工具,在线文字添加">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://liangtu.cc/">
-
-<!-- Open Graph -->
-<meta property="og:title" content="靓图 - 微信表情包在线编辑器">
-<meta property="og:description" content="上传图片，裁剪尺寸、加文字，一键生成微信表情包。100%本地处理，完全免费。">
-<meta property="og:url" content="https://liangtu.cc/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="靓图">
-<meta property="og:locale" content="zh_CN">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="靓图 - 微信表情包在线编辑器">
-<meta name="twitter:description" content="上传图片，裁剪尺寸、加文字，一键生成微信表情包。100%本地处理。">
-
-<!-- JSON-LD Structured Data -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "靓图",
-  "url": "https://liangtu.cc/",
-  "description": "在线微信表情包制作工具，支持裁剪、文字、导出等功能，100%本地处理。",
-  "applicationCategory": "Multimedia",
-  "operatingSystem": "All",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
-  "author": { "@type": "Person", "name": "fengloulai" }
-}
-</script>
-
-<!-- Favicon (inline SVG) -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎨</text></svg>">
-<link rel="stylesheet" href="sticker/style.css">
+<title>靓图 - 在线图片设计工具箱 | 免费下载，无需注册</title>
+<meta name="description" content="免费下载，无需注册，直接拖取图片。微信表情包制作、电商图片处理，100%本地处理。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%237c3aed'/%3E%3Cstop offset='100%25' style='stop-color:%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23g)'/%3E%3Ctext y='68' x='50' text-anchor='middle' font-size='55'%3E🎨%3C/text%3E%3C/svg%3E">
 <style>
-  /* ===== 内容区（编辑器下方） ===== */
-  .content-section {
-    max-width: 1100px; margin: 0 auto; padding: 40px 20px;
-  }
-  .content-section h2 {
-    font-size: 1.6em; color: #1f2937; margin-bottom: 20px; text-align: center;
-  }
-  .content-section h3 {
-    font-size: 1.15em; color: #374151; margin: 8px 0;
-  }
-  .content-section p {
-    color: #6b7280; font-size: 0.95em; line-height: 1.7;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #fff; color: #1a1a2e;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
   }
 
-  /* 功能卡片网格 */
-  .feature-grid {
+  /* ===== Dev Tag (in nav) ===== */
+  .dev-tag {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: #fff; padding: 5px 16px;
+    border-radius: 20px; font-size: 0.82em; font-weight: 600;
+    box-shadow: 0 2px 8px rgba(245,158,11,0.2);
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1200px; margin: 0 auto;
+    padding: 20px 40px;
+  }
+  .nav-logo {
+    font-size: 1.4em; font-weight: 800; color: #111;
+    text-decoration: none; letter-spacing: -1px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #7c3aed;
+  }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    color: #555; text-decoration: none; font-size: 0.9em; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #7c3aed; }
+
+  /* ===== Hero ===== */
+  .hero {
+    max-width: 1200px; margin: 0 auto;
+    padding: 40px 40px 80px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
-    margin-bottom: 48px;
-  }
-  .feature-card {
-    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
-    padding: 24px 20px; transition: box-shadow 0.2s;
-  }
-  .feature-card:hover { box-shadow: 0 4px 20px rgba(167,139,250,0.1); }
-  .feature-card .icon { font-size: 2em; margin-bottom: 12px; }
-  .feature-card h3 { margin-bottom: 6px; }
-
-  /* 使用步骤 */
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 48px;
-  }
-  .step {
-    text-align: center; padding: 24px 16px;
-    background: linear-gradient(135deg, #fafafe, #f5f3ff);
-    border: 1px solid #e5e7eb; border-radius: 12px;
-  }
-  .step-num {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 40px; height: 40px; border-radius: 50%;
-    background: #7c3aed; color: #fff; font-size: 1.2em; font-weight: 700;
-    margin-bottom: 12px;
-  }
-  .step h3 { margin-bottom: 4px; }
-  .step p { font-size: 0.85em; }
-
-  /* FAQ */
-  .faq-list { margin-bottom: 48px; }
-  .faq-item {
-    background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
-    padding: 18px 22px; margin-bottom: 12px;
-  }
-  .faq-item h3 { margin-bottom: 6px; }
-  .faq-item p { font-size: 0.9em; }
-
-  /* Header */
-  .header-inner {
-    display: flex;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
   }
-  .header-inner h1 { margin-bottom: 4px; }
-  .feedback-btn {
+
+  .hero-text h1 {
+    font-size: 2.5em; font-weight: 800; color: #111;
+    letter-spacing: -1.5px; line-height: 1.25; margin-bottom: 14px;
+  }
+  .hero-text p {
+    font-size: 1em; color: #666; line-height: 1.7; margin-bottom: 28px;
+  }
+  .hero-buttons { display: flex; gap: 14px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 12px 28px; border-radius: 10px;
+    font-size: 0.95em; font-weight: 600; text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: #7c3aed; color: #fff;
+  }
+  .btn-primary:hover {
+    background: #6d28d9; transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+  }
+  .btn-outline {
+    background: #fff; color: #333; border: 1.5px solid #ddd;
+  }
+  .btn-outline:hover { border-color: #7c3aed; color: #7c3aed; }
+
+  /* ===== Hero Illustration ===== */
+  .hero-illustration {
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .hero-illustration svg {
+    width: 100%; max-width: 420px; height: auto;
+  }
+
+  /* ===== Tools Section ===== */
+  .tools {
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 40px 100px;
+  }
+  .tools h2 {
+    text-align: center; font-size: 1.5em; font-weight: 700;
+    color: #111; margin-bottom: 8px; letter-spacing: -0.5px;
+  }
+  .tools .section-sub {
+    text-align: center; color: #999; font-size: 0.92em; margin-bottom: 44px;
+  }
+  .tools-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;
+  }
+  .tool-entry {
+    border-radius: 16px; overflow: hidden;
+    text-decoration: none; color: inherit;
+    border: 1px solid #eee; background: #fff;
+    transition: all 0.3s ease;
+  }
+  .tool-entry:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.07);
+    transform: translateY(-2px); border-color: #ddd;
+  }
+  .tool-entry .te-preview {
+    width: 100%; aspect-ratio: 16/10;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4.5em;
+  }
+  .tool-entry .te-preview.sticker-bg {
+    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  }
+  .tool-entry .te-preview.ecom-bg {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  }
+  .tool-entry .te-preview.gif-bg {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+  }
+  .tool-entry .te-info {
+    padding: 22px 26px;
+  }
+  .tool-entry .te-info h3 {
+    font-size: 1.1em; font-weight: 700; margin-bottom: 5px; color: #111;
+  }
+  .tool-entry .te-info p {
+    font-size: 0.87em; color: #888; line-height: 1.6;
+  }
+
+  /* ===== 留言板 ===== */
+  .board {
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 40px 80px;
+  }
+  .board h2 {
+    text-align: center; font-size: 1.5em; font-weight: 700;
+    color: #111; margin-bottom: 8px; letter-spacing: -0.5px;
+  }
+  .board .section-sub {
+    text-align: center; color: #999; font-size: 0.92em; margin-bottom: 36px;
+  }
+  .board-box {
+    max-width: 680px; margin: 0 auto;
+    border-radius: 16px; border: 1px solid #eee;
+    background: #fff; overflow: hidden;
+  }
+  .board-list {
+    max-height: 360px; overflow-y: auto;
+    padding: 16px 20px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .board-list::-webkit-scrollbar { width: 4px; }
+  .board-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+  .msg-item {
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .msg-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
     background: linear-gradient(135deg, #7c3aed, #a78bfa);
-    color: #fff; border: none; border-radius: 20px;
-    padding: 8px 20px; font-size: 0.9em; cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    white-space: nowrap;
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 0.78em; flex-shrink: 0;
   }
-  .feedback-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(124,58,237,0.3);
+  .msg-body {
+    flex: 1; min-width: 0;
   }
-  .app-footer {
-    text-align: center; padding: 32px 20px; color: #9ca3af; font-size: 0.85em;
+  .msg-text {
+    font-size: 0.88em; color: #333; line-height: 1.6;
+    word-break: break-word;
+  }
+  .msg-meta {
+    font-size: 0.72em; color: #bbb; margin-top: 3px;
+  }
+  .board-empty {
+    text-align: center; color: #ccc; padding: 40px 0;
+    font-size: 0.9em;
+  }
+  .board-input {
+    display: flex; gap: 8px; padding: 14px 20px;
+    border-top: 1px solid #f0f0f0; background: #fafafa;
+  }
+  .board-input textarea {
+    flex: 1; height: 40px; padding: 10px 12px;
+    border: 1px solid #e5e5e5; border-radius: 8px;
+    font-size: 0.85em; font-family: inherit;
+    resize: none; outline: none;
+  }
+  .board-input textarea:focus {
+    border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.08);
+  }
+  .board-input .btn-send {
+    padding: 0 20px; height: 40px; border-radius: 8px;
+    border: none; background: #7c3aed; color: #fff;
+    font-size: 0.85em; font-weight: 600; cursor: pointer;
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  .board-input .btn-send:hover { background: #6d28d9; }
+  .board-input .btn-send:disabled { background: #c4b5fd; cursor: not-allowed; }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center; padding: 28px 20px;
+    color: #aaa; font-size: 0.8em;
     border-top: 1px solid #f3f4f6;
   }
-  .app-footer a { color: #7c3aed; text-decoration: none; }
 
-  /* Feedback Modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.4); z-index: 9999;
-    align-items: center; justify-content: center;
-  }
-  .modal-overlay.show { display: flex; }
-  .modal-box {
-    background: #fff; border-radius: 16px;
-    padding: 28px 24px; max-width: 440px; width: 90%;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    animation: modalIn 0.25s ease;
-  }
-  @keyframes modalIn {
-    from { opacity: 0; transform: translateY(20px) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  .modal-header {
-    display: flex; align-items: center;
-    justify-content: space-between; margin-bottom: 16px;
-  }
-  .modal-header h3 { margin: 0; }
-  .modal-close {
-    background: none; border: none; font-size: 1.3em;
-    cursor: pointer; color: #9ca3af; padding: 4px 8px;
-  }
-  .modal-close:hover { color: #374151; }
-  .modal-box textarea {
-    width: 100%; margin-bottom: 14px;
-    border: 1px solid #e5e7eb; border-radius: 8px;
-    padding: 10px 12px; font-size: 0.92em; resize: vertical;
-    font-family: inherit;
-  }
-  .btn-send {
-    width: 100%; padding: 10px;
-    background: linear-gradient(135deg, #7c3aed, #a78bfa);
-    color: #fff; border: none; border-radius: 10px;
-    font-size: 1em; cursor: pointer; font-weight: 600;
-  }
-  .btn-send:hover { opacity: 0.9; }
-  .toast {
-    position: fixed; bottom: 24px; left: 50%;
-    transform: translateX(-50%);
-    background: #059669; color: #fff;
-    padding: 10px 24px; border-radius: 20px;
-    font-size: 0.9em; z-index: 99999;
-    animation: toastIn 0.3s ease;
-  }
-  @keyframes toastIn {
-    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: 1fr; gap: 32px;
+      padding: 30px 20px 60px;
+    }
+    .hero-illustration { order: -1; }
+    .hero-illustration svg { max-width: 280px; }
+    .hero-text h1 { font-size: 1.7em; }
+    .tools-grid { grid-template-columns: 1fr; }
+    .nav { padding: 14px 20px; }
+    .nav-links { display: none; }
   }
 </style>
 </head>
 <body>
 
-<!-- ===== 顶部 ===== -->
-<header>
-  <div class="header-inner">
-    <div>
-      <h1>🎨 靓图</h1>
-      <p>微信表情包在线编辑器 · 100%本地处理 · 图片不出电脑 · 完全免费</p>
-    </div>
-    <button class="feedback-btn" onclick="openFeedback()">💬 建议反馈</button>
+<!-- Nav -->
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <span class="dot"></span>靓图
+  </a>
+  <div class="nav-links">
+    <span class="dev-tag">⚡ 持续开发中</span>
   </div>
-</header>
+</nav>
 
-<!-- ===== 编辑器区 ===== -->
-<div class="main-layout">
-  <div class="panel panel-original" id="panelOriginal">
-    <div class="panel-title">原图</div>
-    <div class="drop-zone" id="dropZone">
-      <div class="drop-hint">📁 拖入图片<br>或点击上传</div>
-      <input type="file" id="fileInput" accept="image/*,video/mp4,video/quicktime" hidden>
-      <canvas id="canvasOriginal"></canvas>
-    </div>
-    <div class="image-info" id="imageInfo"></div>
-  </div>
-
-  <div class="panel panel-preview" id="panelPreview">
-    <div class="panel-title">编辑预览 <span id="editLabel"></span></div>
-    <div class="preview-container" id="previewContainer">
-      <canvas id="canvasPreview"></canvas>
-      <div class="preview-placeholder" id="previewPlaceholder">上传图片后开始编辑</div>
-    </div>
-    
-    <!-- 浮动工具栏（画布内底部） -->
-    <div class="floating-toolbar" id="floatingToolbar" style="display:none">
-        <button class="ft-btn" data-tool="crop" title="裁剪">✂</button>
-        <button class="ft-btn" data-tool="text" title="文字">T</button>
-        <button class="ft-btn" data-tool="convert" title="导出">⬇</button>
-      </div>
-    
-    <!-- 各工具popup（浮在工具栏上方） -->
-    <div class="tool-popup" id="popupCrop">
-      <button class="btn" onclick="setCropPreset(240,240)">240×240</button>
-      <button class="btn" onclick="setCropPreset(120,120)">120×120</button>
-      <button class="btn" onclick="setCropPreset(50,50)">50×50</button>
-      <span style="display:flex;gap:4px;align-items:center">
-        <input type="number" id="cropW" value="240" min="1" class="input-sm" style="width:55px">
-        ×<input type="number" id="cropH" value="240" min="1" class="input-sm" style="width:55px">
-        <button class="btn btn-primary" onclick="applyCrop()">裁剪</button>
-      </span>
-    </div>
-    <div class="tool-popup" id="popupText">
-      <input type="text" id="textInput" placeholder="输入文字..." class="input-lg">
-      <div class="style-grid" id="textStyles">
-        <button class="style-btn" data-style="white-black">熊猫头</button>
-        <button class="style-btn" data-style="yellow-red">咆哮体</button>
-        <button class="style-btn" data-style="vertical">竖排</button>
-        <button class="style-btn" data-style="shadow">女生风</button>
-        <button class="style-btn" data-style="small-gray">小备注</button>
-      </div>
-      <button class="btn btn-primary" onclick="applyText()">加到图上</button>
-    </div>
-    <div class="tool-popup" id="popupConvert">
-      <button class="btn btn-primary" onclick="downloadImage()">💾 下载PNG</button>
-      <button class="btn" onclick="undo()">↩ 撤销</button>
-      <button class="btn" onclick="redo()">↪ 重做</button>
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-text">
+    <h1>免费下载，<br>无需注册，<br>直接拖取图片</h1>
+    <p>所有图片处理都在浏览器本地完成，不上传服务器。打开网页就能用，关掉网络照样能编辑。</p>
+    <div class="hero-buttons">
+      <a href="sticker/" class="btn btn-primary">开始创作 →</a>
+      <a href="#tools" class="btn btn-outline">看看能做什么</a>
     </div>
   </div>
-</div>
-
-<!-- 底部状态栏 -->
-<div class="status-bar">
-  <span>尺寸: <strong id="statusDims">—</strong></span>
-  <span>格式: <strong id="statusFormat">—</strong></span>
-  <span>大小: <strong id="statusSize">—</strong></span>
-  <span style="flex:1"></span>
-  <button class="btn btn-undo" onclick="undo()" title="撤销 (Ctrl+Z)">↩</button>
-  <button class="btn btn-redo" onclick="redo()" title="重做 (Ctrl+Y)">↪</button>
-  <button class="btn btn-primary" onclick="downloadImage()">💾 下载</button>
-</div>
-
-<!-- ===== 内容区（SEO + 介绍） ===== -->
-<section class="content-section">
-
-  <h2>✨ 功能一览</h2>
-  <div class="feature-grid">
-
-    <div class="feature-card">
-      <div class="icon">✂️</div>
-      <h3>智能裁剪</h3>
-      <p>预设微信表情尺寸（240×240 / 120×120 / 50×50），一键裁剪，也可自定义任意尺寸。居中裁剪无需手动对齐。</p>
-    </div>
-
-    <div class="feature-card">
-      <div class="icon">🖊️</div>
-      <h3>文字引擎</h3>
-      <p>熊猫头经典白字黑描边、暴漫咆哮黄字红描边、竖排咆哮体等 5 种风格，点一下直接叠到图上。</p>
-    </div>
-
-    <div class="feature-card">
-      <div class="icon">🔒</div>
-      <h3>100% 本地处理</h3>
-      <p>所有图片处理都在你的浏览器里完成，不上传到任何服务器。隐私安全，速度飞快。</p>
-    </div>
-
+  <div class="hero-illustration">
+    <img src="menghu.png" alt="萌狐" style="width:100%;max-width:380px;height:auto;">
   </div>
-
-  <h2>📋 三步做出表情包</h2>
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <h3>上传图片</h3>
-      <p>拖入或点击上传你的图片，支持 PNG / JPEG / WebP / GIF</p>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <h3>编辑美化</h3>
-      <p>裁剪尺寸、加文字——浮动工具栏在画布上直接操作</p>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <h3>导出使用</h3>
-      <p>一键下载PNG，直接发到微信使用</p>
-    </div>
-  </div>
-
-  <h2>❓ 常见问题</h2>
-  <div class="faq-list">
-
-    <div class="faq-item">
-      <h3>微信表情包要多少像素？</h3>
-      <p>微信表情主图推荐 240×240 像素，缩略图 120×120，图标 50×50。本工具已预设这些尺寸，点一下即可裁剪。</p>
-    </div>
-
-    <div class="faq-item">
-      <h3>为什么我的透明PNG发到微信变成黑底了？</h3>
-      <p>微信不支持透明PNG，会自动渲染成黑色背景。靓图的裁剪工具会自动垫白底，避免黑底问题。</p>
-    </div>
-
-    <div class="faq-item">
-      <h3>我的图片会传到服务器吗？</h3>
-      <p>不会。靓图是纯前端工具，所有图片处理都在你自己的浏览器中完成，图片从不出你的电脑。你可以关掉网络试试，照样能用。</p>
-    </div>
-
-    <div class="faq-item">
-      <h3>支持哪些图片格式？</h3>
-      <p>上传支持 PNG、JPEG、WebP、GIF 等主流格式。导出为高清PNG，保证画质。</p>
-    </div>
-
-    <div class="faq-item">
-      <h3>误操作了怎么办？</h3>
-      <p>底部有 ↩ 撤销和 ↪ 重做按钮，也可以用快捷键 Ctrl+Z / Ctrl+Y。每一步编辑都会被记录，随时回退。</p>
-    </div>
-
-  </div>
-
 </section>
 
-<!-- ===== 反馈弹窗 ===== -->
-<div id="feedbackModal" class="modal-overlay" onclick="closeFeedback(event)">
-  <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h3>💬 建议反馈</h3>
-      <button class="modal-close" onclick="closeFeedback()">✕</button>
-    </div>
-    <form id="feedbackForm" action="https://formsubmit.co/599492435@qq.com" method="POST" style="margin-top:4px">
-      <input type="hidden" name="_subject" value="靓图 - 用户反馈">
-      <input type="hidden" name="_captcha" value="false">
-      <input type="hidden" name="_template" value="table">
-      <textarea name="message" rows="4" placeholder="写下你的建议或问题..." required></textarea>
-      <button type="submit" class="btn-send">发送反馈</button>
-    </form>
-  </div>
-</div>
+<!-- Tools -->
+<section class="tools" id="tools">
+  <h2>三个工具，满足日常图片需求</h2>
+  <p class="section-sub">所有工具都在浏览器本地运行，图片不会离开你的电脑</p>
 
-<footer class="app-footer">
-  靓图 liangtu.cc &nbsp;|&nbsp;
-  <a href="https://github.com/fengloulai/liangtu" target="_blank" rel="noopener">GitHub 开源</a>
-  &nbsp;|&nbsp; 图片100%本地处理 · 零上传
+  <div class="tools-grid">
+    <a href="sticker/" class="tool-entry">
+      <div class="te-preview sticker-bg">🎭</div>
+      <div class="te-info">
+        <h3>微信表情包</h3>
+        <p>拖入图片 → 添加文字 → 调字体描边颜色 → 一键导出标准尺寸。支持14款中文字体，白字黑边、咆哮黄字多种风格。</p>
+      </div>
+    </a>
+    <a href="sticker/gif.html" class="tool-entry">
+      <div class="te-preview gif-bg">🎞️</div>
+      <div class="te-info">
+        <h3>GIF 合成</h3>
+        <p>多张图片合成 GIF 动画——拖入多张图，调整帧顺序和速度，一键导出 GIF。</p>
+      </div>
+    </a>
+    <a href="compress/" class="tool-entry">
+      <div class="te-preview ecom-bg">🛒</div>
+      <div class="te-info">
+        <h3>电商改图</h3>
+        <p>图片压缩、自由裁剪、添加水印、AI抠图——电商图片一站式处理。拖拽调质量，实时预览效果。</p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- 留言板 -->
+<section class="board" id="board">
+  <h2>💬 留言板</h2>
+  <p class="section-sub">就在这里唠两句，bug、建议、闲聊都可以</p>
+  <div class="board-box">
+    <div class="board-list" id="boardList">
+      <div class="board-empty">还没有留言，来说第一句吧 😊</div>
+    </div>
+    <div class="board-input">
+      <textarea id="boardMsg" placeholder="说点什么..." maxlength="500" rows="1"></textarea>
+      <button class="btn-send" id="boardSend" onclick="postMessage()">发送</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  靓图 liangtu.cc · 100%本地处理 · 零上传 · ICP备案号：DICPD2026025465D-1
 </footer>
 
-<script src="sticker/app.js"></script>
+<script>
+// ===== 留言板 =====
+var API = '/api/'
+
+function formatTime(ts) {
+  var d = new Date(ts + 'Z')
+  var y = d.getFullYear()
+  var m = String(d.getMonth() + 1).padStart(2, '0')
+  var day = String(d.getDate()).padStart(2, '0')
+  var h = String(d.getHours()).padStart(2, '0')
+  var mi = String(d.getMinutes()).padStart(2, '0')
+  var s = String(d.getSeconds()).padStart(2, '0')
+  return { date: y + '.' + m + '.' + day, time: h + ':' + mi + ':' + s }
+}
+
+function loadMessages() {
+  fetch(API + 'get_messages.php?t=' + Date.now())
+    .then(function(r) { return r.json() })
+    .then(function(msgs) {
+      var list = document.getElementById('boardList')
+      if (!msgs || !msgs.length) {
+        list.innerHTML = '<div class="board-empty">还没有留言，来说第一句吧 😊</div>'
+        return
+      }
+      var html = ''
+      msgs.slice().reverse().forEach(function(m) {
+        var ft = formatTime(m.time)
+        var initial = (m.text || '?')[0]
+        html += '<div class="msg-item">'
+          + '<div class="msg-avatar">' + initial + '</div>'
+          + '<div class="msg-body">'
+          + '<div class="msg-text">' + m.text + '</div>'
+          + '<div class="msg-meta">' + ft.date + ' ' + ft.time + '</div>'
+          + '</div></div>'
+      })
+      list.innerHTML = html
+      list.scrollTop = 0
+    })
+    .catch(function() {})
+}
+
+function postMessage() {
+  var ta = document.getElementById('boardMsg')
+  var btn = document.getElementById('boardSend')
+  var msg = ta.value.trim()
+  if (!msg) return
+  btn.disabled = true
+  btn.textContent = '发送中...'
+  fetch(API + 'post_message.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: msg })
+  })
+    .then(function(r) { return r.json() })
+    .then(function(data) {
+      if (data.success) {
+        ta.value = ''
+        loadMessages()
+      }
+    })
+    .catch(function() {})
+    .finally(function() {
+      btn.disabled = false
+      btn.textContent = '发送'
+    })
+}
+
+// 回车发送
+document.getElementById('boardMsg').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+    postMessage()
+  }
+})
+
+// 默认加载
+loadMessages()
+</script>
+
 </body>
 </html>

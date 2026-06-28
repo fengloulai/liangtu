@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIF 合成 - 靓图</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%237c3aed'/%3E%3Ctext y='68' x='50' text-anchor='middle' font-size='55'%3E🎞️%3C/text%3E%3C/svg%3E">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f8f9fa;color:#333;min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;max-width:900px;margin:0 auto;padding:16px 20px}
+header .logo{font-weight:800;font-size:1.1em;color:#7c3aed;text-decoration:none}
+header .hint{font-size:0.8em;color:#999}
+.main{max-width:900px;margin:0 auto;padding:0 20px 60px}
+
+/* 上传区 */
+.upload-box{border:2px dashed #ddd;border-radius:16px;padding:56px 20px;text-align:center;
+  background:#fff;cursor:pointer;transition:all .2s}
+.upload-box:hover{border-color:#7c3aed;background:#faf5ff}
+.upload-box .icon{font-size:3em;margin-bottom:8px}
+.upload-box .title{font-size:1.1em;font-weight:600;color:#555;margin-bottom:4px}
+.upload-box .sub{font-size:0.85em;color:#999}
+.upload-box input{display:none}
+
+/* 帧列表 */
+.frame-section{margin-top:24px}
+.frame-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.frame-header h2{font-size:1.1em;font-weight:700}
+.frame-count{font-size:0.85em;color:#999}
+.frames{display:flex;gap:10px;flex-wrap:wrap}
+.frame-card{width:100px;border:2px solid #e5e5e5;border-radius:10px;overflow:hidden;
+  position:relative;cursor:grab;background:#fff;transition:.15s}
+.frame-card:hover{border-color:#7c3aed}
+.frame-card img{width:100%;height:80px;object-fit:cover;display:block}
+.frame-card .num{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.6);color:#fff;
+  font-size:11px;padding:1px 6px;border-radius:8px}
+.frame-card .del{position:absolute;top:4px;right:4px;width:20px;height:20px;
+  background:rgba(255,0,0,.8);color:#fff;border-radius:50%;border:none;
+  font-size:12px;cursor:pointer;display:none;line-height:20px;text-align:center}
+.frame-card:hover .del{display:block}
+
+/* 设置 */
+.settings{margin-top:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.settings label{font-size:0.9em;font-weight:600;color:#555}
+.settings input[type=range]{width:160px}
+.settings .speed-val{font-size:0.85em;color:#7c3aed;font-weight:600;min-width:50px}
+
+/* 导出 */
+.export-bar{margin-top:24px;display:flex;gap:10px}
+.btn{padding:12px 28px;border-radius:10px;font-size:0.95em;font-weight:600;cursor:pointer;
+  border:none;transition:all .2s}
+.btn-primary{background:#7c3aed;color:#fff;width:100%}
+.btn-primary:hover{background:#6d28d9;transform:translateY(-1px);box-shadow:0 4px 16px rgba(124,58,237,.3)}
+.btn-primary:disabled{background:#c4b5fd;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ghost{background:#fff;color:#e53e3e;border:1px solid #fecaca}
+.btn-ghost:hover{background:#fef2f2}
+
+/* 页脚 */
+footer{text-align:center;padding:28px 20px;color:#aaa;font-size:0.8em}
+
+/* 响应式 */
+@media(max-width:600px){.frame-card{width:80px}.frame-card img{height:64px}}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">← 靓图</a>
+  <span class="hint">本地处理 · 不上传服务器</span>
+</header>
+
+<div class="main">
+  <!-- 上传区 -->
+  <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+    <div class="icon">📁</div>
+    <div class="title">拖入多张图片，或点击选择</div>
+    <div class="sub">支持 JPG / PNG / GIF / WebP · 每张图一帧</div>
+    <input type="file" id="fileInput" accept="image/*" multiple>
+  </div>
+
+  <!-- 帧列表 -->
+  <div class="frame-section">
+    <div class="frame-header">
+      <h2>🎞️ 帧列表</h2>
+      <span class="frame-count" id="frameCount">0 帧</span>
+    </div>
+    <div class="frames" id="frameList">
+      <div style="color:#ccc;padding:20px;text-align:center;width:100%">上传图片后出现在这里<br>拖拽可调整顺序</div>
+    </div>
+  </div>
+
+  <!-- 速度设置 -->
+  <div class="settings">
+    <label>⏱ 每帧速度</label>
+    <input type="range" id="speedSlider" min="100" max="2000" value="500" step="50"
+      oninput="document.getElementById('speedVal').textContent=(this.value/1000).toFixed(1)+'s'">
+    <span class="speed-val" id="speedVal">0.5s</span>
+    <span style="font-size:0.75em;color:#999">← 快 · 慢 →</span>
+  </div>
+
+  <!-- 导出 -->
+  <div class="export-bar">
+    <button class="btn btn-primary" id="btnExport" onclick="exportGIF()" disabled>
+      🎞️ 导出 GIF（至少2帧）
+    </button>
+    <button class="btn btn-ghost" onclick="clearAll()">清空</button>
+  </div>
+
+  <!-- 预览区 -->
+  <div id="previewArea" style="margin-top:20px;text-align:center;display:none">
+    <p style="font-size:0.85em;color:#666;margin-bottom:8px">👇 预览（在浏览器里会动）</p>
+    <img id="previewImg" style="max-width:100%;border-radius:8px;box-shadow:0 2px 16px rgba(0,0,0,.1)">
+  </div>
+</div>
+
+<footer>靓图 liangtu.cc · 100%本地处理 · ICP备案号：DICPD2026025465D-1</footer>
+
+<script src="gif.js"></script>
+<script>
+// 状态
+let frames = []  // [{img: Image, w, h}]
+let nextId = 0
+
+// 上传
+const uploadBox = document.getElementById('uploadBox')
+const fileInput = document.getElementById('fileInput')
+
+uploadBox.addEventListener('dragover', e => {e.preventDefault();uploadBox.style.borderColor='#7c3aed'})
+uploadBox.addEventListener('dragleave', () => uploadBox.style.borderColor='#ddd')
+uploadBox.addEventListener('drop', e => {
+  e.preventDefault()
+  uploadBox.style.borderColor='#ddd'
+  handleFiles(e.dataTransfer.files)
+})
+fileInput.addEventListener('change', e => handleFiles(e.target.files))
+
+function handleFiles(files) {
+  Array.from(files).forEach(f => {
+    if (!f.type.startsWith('image/')) return
+    const reader = new FileReader()
+    reader.onload = function() {
+      const img = new Image()
+      img.onload = function() {
+        frames.push({img: img, w: img.naturalWidth, h: img.naturalHeight, id: nextId++})
+        renderFrameList()
+      }
+      img.src = reader.result
+    }
+    reader.readAsDataURL(f)
+  })
+}
+
+function renderFrameList() {
+  const list = document.getElementById('frameList')
+  document.getElementById('frameCount').textContent = frames.length + ' 帧'
+  document.getElementById('btnExport').disabled = frames.length < 2
+  document.getElementById('btnExport').textContent = frames.length < 2
+    ? '🎞️ 导出 GIF（至少2帧）'
+    : '🎞️ 导出 GIF（' + frames.length + '帧）'
+
+  if (frames.length === 0) {
+    list.innerHTML = '<div style="color:#ccc;padding:20px;text-align:center;width:100%">上传图片后出现在这里<br>拖拽可调整顺序</div>'
+    return
+  }
+
+  list.innerHTML = frames.map((f, i) =>
+    '<div class="frame-card" draggable="true" data-idx="' + i + '">'
+    + '<img src="' + f.img.src + '" alt="帧' + (i+1) + '">'
+    + '<span class="num">' + (i+1) + '</span>'
+    + '<button class="del" onclick="removeFrame(' + i + ')">×</button>'
+    + '</div>'
+  ).join('')
+
+  // 拖拽排序
+  list.querySelectorAll('.frame-card').forEach(card => {
+    card.addEventListener('dragstart', e => {e.dataTransfer.setData('text/plain', card.dataset.idx);card.style.opacity='0.5'})
+    card.addEventListener('dragend', e => {card.style.opacity='1'})
+    card.addEventListener('dragover', e => e.preventDefault())
+    card.addEventListener('drop', e => {
+      e.preventDefault()
+      const from = parseInt(e.dataTransfer.getData('text/plain'))
+      const to = parseInt(card.dataset.idx)
+      if (from !== to) {
+        const [item] = frames.splice(from, 1)
+        frames.splice(to, 0, item)
+        renderFrameList()
+      }
+    })
+  })
+}
+
+function removeFrame(idx) {
+  frames.splice(idx, 1)
+  renderFrameList()
+}
+
+function clearAll() {
+  frames = []
+  renderFrameList()
+}
+
+// 导出GIF
+function exportGIF() {
+  if (frames.length < 2) return
+
+  // 检测所有帧是否相同
+  if (frames.length >= 2) {
+    const firstSrc = frames[0].img.src
+    const allSame = frames.every(f => f.img.src === firstSrc)
+    if (allSame) {
+      alert('⚠️ 所有帧都是同一张图，GIF不会动！\n\n请上传不同的图片，或对每帧做不同编辑。')
+      return
+    }
+  }
+
+  const delay = parseInt(document.getElementById('speedSlider').value)
+  const maxW = Math.max(...frames.map(f => f.w))
+  const maxH = Math.max(...frames.map(f => f.h))
+
+  const gif = new GIF({
+    workers: 2,
+    quality: 10,
+    width: maxW,
+    height: maxH,
+    workerScript: 'gif.worker.js'
+  })
+
+  frames.forEach(f => {
+    const c = document.createElement('canvas')
+    c.width = maxW; c.height = maxH
+    const ctx = c.getContext('2d')
+    // 居中绘制
+    const ox = Math.round((maxW - f.w) / 2)
+    const oy = Math.round((maxH - f.h) / 2)
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, maxW, maxH)
+    ctx.drawImage(f.img, ox, oy, f.w, f.h)
+    gif.addFrame(c, {delay: delay, copy: true})
+  })
+
+  const btn = document.getElementById('btnExport')
+  btn.disabled = true
+  btn.textContent = '⏳ 生成中...'
+
+  gif.on('finished', function(blob) {
+    const url = URL.createObjectURL(blob)
+    
+    // 显示预览
+    const previewArea = document.getElementById('previewArea')
+    const previewImg = document.getElementById('previewImg')
+    previewImg.src = url
+    previewArea.style.display = 'block'
+    
+    // 自动下载
+    const a = document.createElement('a')
+    a.href = url; a.download = 'liangtu.gif'; a.click()
+    
+    btn.disabled = false
+    btn.textContent = '🎞️ 导出 GIF（' + frames.length + '帧）✅'
+  })
+
+  gif.render()
+}
+</script>
+</body>
+</html>
