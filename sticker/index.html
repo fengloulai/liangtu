@@ -1,190 +1,165 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>表情包工具箱 - 靓图</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>表情包工具箱 - 靓图</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="../assets/tracking.js"></script>
 </head>
 <body>
 
-<header>
-  <a href="../" class="logo">← 靓图</a>
-  <h1>🎨 微信表情包工具箱</h1>
-  <p>上传一张图片，开始编辑 · 全部在浏览器本地处理</p>
-</header>
+<div id="app">
+  <header>
+    <a href="../index.html" class="logo">← 靓图</a>
+    <span class="title">表情包工具箱</span>
+    <span class="hint">本地处理 · 不上传服务器</span>
+  </header>
 
-<div class="main-layout">
-  <!-- 左侧：原图 -->
-  <div class="panel panel-original" id="panelOriginal">
-    <div class="panel-title">原图</div>
-    <div class="drop-zone" id="dropZone">
-      <div class="drop-hint">📁 拖入图片<br>或点击上传</div>
-      <input type="file" id="fileInput" accept="image/*,video/mp4,video/quicktime" hidden>
-      <canvas id="canvasOriginal"></canvas>
-    </div>
-    <div class="image-info" id="imageInfo"></div>
+  <div id="workspace">
+    <!-- 左栏：工具 -->
+    <aside id="leftBar">
+      <button class="tool-btn active" data-tool="crop" title="尺寸">
+        <svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2"/><line x1="9" y1="3" x2="9" y2="21" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <button class="tool-btn" data-tool="text" title="文字">
+        <svg width="22" height="22" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="9" y1="20" x2="15" y2="20" stroke="currentColor" stroke-width="2"/><line x1="12" y1="4" x2="12" y2="20" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <button class="tool-btn" data-tool="bg" title="白底">
+        <svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <div class="tool-divider"></div>
+      <button class="tool-btn" data-tool="flip" title="翻转">
+        <svg width="22" height="22" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="9 21 3 21 3 15" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="3" x2="14" y2="10" stroke="currentColor" stroke-width="2"/><line x1="3" y1="21" x2="10" y2="14" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <button class="tool-btn" data-tool="filter" title="滤镜">
+        <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+      </button>
+      <button class="tool-btn" data-tool="adjust" title="调整">
+        <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="6" x2="12" y2="18" stroke="currentColor" stroke-width="2"/><polyline points="8 10 12 6 16 10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <button class="tool-btn" data-tool="watermark" title="水印">
+        <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 17l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 12l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <button class="tool-btn" data-tool="compress" title="压缩">
+        <svg width="22" height="22" viewBox="0 0 24 24"><polyline points="4 14 10 14 10 20" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="20 10 14 10 14 4" fill="none" stroke="currentColor" stroke-width="2"/><line x1="14" y1="10" x2="21" y2="3" stroke="currentColor" stroke-width="2"/><line x1="3" y1="21" x2="10" y2="14" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <div class="tool-divider"></div>
+      <button class="tool-btn" onclick="exportImage()" title="导出到电脑">
+        <svg width="22" height="22" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="7 10 12 15 17 10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <div class="tool-divider"></div>
+      <button class="tool-btn" onclick="undo()" title="撤销 Ctrl+Z">
+        <svg width="22" height="22" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <button class="tool-btn" onclick="redo()" title="重做 Ctrl+Y">
+        <svg width="22" height="22" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <div class="tool-divider"></div>
+      <button class="tool-btn" onclick="resetAll()" title="清空">
+        <svg width="22" height="22" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+    </aside>
+
+    <main id="canvasArea" class="empty">
+      <div id="dropOverlay">
+        <div class="drop-icon">📁</div>
+        <div class="drop-text">拖入图片或点击上传</div>
+        <div class="drop-sub">JPG / PNG / GIF / WebP</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" hidden>
+      <canvas id="mainCanvas"></canvas>
+    </main>
+
+    <aside id="rightBar">
+      <!-- 图层面板 -->
+      <div id="layerPanel" class="layer-panel">
+        <div class="layer-header">
+          <h3>📚 图层</h3>
+          <button class="btn btn-sm" onclick="addTextLayer()" title="添加文字图层">+ 文字</button>
+        </div>
+        <div id="layerList" class="layer-list">
+          <div class="layer-empty">上传图片后<br>图层出现在这里</div>
+        </div>
+      </div>
+
+      <!-- GIF帧管理 -->
+      <div id="framePanel" class="layer-panel">
+        <div class="layer-header">
+          <h3>🎞️ GIF 帧</h3>
+          <button class="btn btn-sm" onclick="addFrame()">保存这一帧</button>
+        </div>
+        <div id="frameList" class="frame-list">
+          <div class="layer-empty">上传图片编辑后<br>点「保存这一帧」<br>每帧内容不同才有动画效果</div>
+        </div>
+      </div>
+
+      <!-- 尺寸面板 -->
+      <div id="panelCrop" class="props-panel active">
+        <h3>裁剪尺寸</h3>
+        <div class="preset-grid">
+          <button class="preset-btn" onclick="doCrop(240,240)">240×240<small>表情</small></button>
+          <button class="preset-btn" onclick="doCrop(120,120)">120×120<small>小图</small></button>
+          <button class="preset-btn" onclick="doCrop(370,320)">370×320<small>横幅</small></button>
+          <button class="preset-btn" onclick="doCrop(750,400)">750×400<small>宽幅</small></button>
+        </div>
+        <div class="custom-size">
+          <input type="number" id="cropW" value="240" min="1" max="4000"> ×
+          <input type="number" id="cropH" value="240" min="1" max="4000">
+          <button class="btn" onclick="applyCustomCrop()">裁剪</button>
+        </div>
+      </div>
+
+      <!-- 文字面板 -->
+      <div id="panelText" class="props-panel">
+        <h3>文字属性</h3>
+        <input type="text" id="textInput" placeholder="输入文字后回车..." class="text-input" autocomplete="off">
+        <div id="textNoLayer" class="text-hint">选中图层后编辑属性，或输入文字创建新图层</div>
+        <div id="textControls" style="display:none">
+          <div class="ctrl-row"><label>字体</label><select id="fontFamily" onchange="updateFontFamily(this.value)"><option value="Microsoft YaHei">微软雅黑</option><option value="SimHei">黑体</option><option value="SimSun">宋体</option><option value="KaiTi">楷体</option><option value="FangSong">仿宋</option><option value="YouYuan">幼圆</option><option value="NSimSun">新宋体</option><option value="DengXian">等线</option><option value="LiSu">隶书</option><option value="STXingkai">华文行楷</option><option value="STCaiyun">华文彩云</option><option value="STXinwei">华文新魏</option><option value="STHupo">华文琥珀</option><option value="PingFang SC">苹方</option></select></div>
+          <div class="ctrl-row"><label>字号 <span id="fontSizeVal">24px</span></label><input type="range" id="fontSizeSlider" min="12" max="200" value="24" oninput="updateFontSize(this.value);document.getElementById('fontSizeVal').textContent=this.value+'px'"></div>
+          <div class="ctrl-row"><label>文字颜色</label><input type="color" id="textColor" value="#FFFFFF" oninput="updateTextColor(this.value)"></div>
+          <div class="ctrl-row"><label>描边颜色</label><input type="color" id="strokeColor" value="#000000" oninput="updateStrokeColor(this.value)"></div>
+          <div class="ctrl-row"><label>描边宽度 <span id="strokeWidthVal">2px</span></label><input type="range" id="strokeWidthSlider" min="0" max="20" value="2" oninput="updateStrokeWidth(this.value);document.getElementById('strokeWidthVal').textContent=this.value+'px'"></div>
+          <div class="ctrl-row"><label>旋转角度 <span id="rotationVal">0°</span></label><input type="range" id="rotationSlider" min="-180" max="180" value="0" oninput="updateRotation(this.value);document.getElementById('rotationVal').textContent=this.value+'°'"></div>
+          <div style="margin-top:8px;display:flex;gap:6px"><button class="btn btn-sm danger" onclick="deleteActiveLayer()">🗑 删除图层</button></div>
+        </div>
+      </div>
+
+      <div id="panelBg" class="props-panel"><h3>白底处理</h3><button class="btn block" onclick="applyWhiteBg()">杂底→纯白底</button><button class="btn block" onclick="applyTransparentToWhite()">透明→白底</button></div>
+      <div id="panelFlip" class="props-panel"><h3>翻转/旋转</h3><button class="btn block" onclick="flipH()">↔ 水平翻转</button><button class="btn block" onclick="flipV()">↕ 垂直翻转</button><button class="btn block" onclick="rotateCW()">↻ 右转90°</button><button class="btn block" onclick="rotateCCW()">↺ 左转90°</button></div>
+      <div id="panelFilter" class="props-panel"><h3>滤镜</h3><button class="btn block" onclick="applyFilter('grayscale')">◼ 灰度</button><button class="btn block" onclick="applyFilter('sepia')">🟫 复古</button><button class="btn block" onclick="applyFilter('invert')">🔄 反色</button><div class="ctrl-row"><label>模糊 <span id="blurVal">0px</span></label><input type="range" min="0" max="10" value="0" step="0.5" oninput="applyBlur(this.value);document.getElementById('blurVal').textContent=this.value+'px'"></div><button class="btn block" onclick="applyFilter('none')" style="margin-top:8px">↩ 重置</button></div>
+      <div id="panelAdjust" class="props-panel"><h3>亮度/对比度/饱和度</h3><div class="ctrl-row"><label>亮度 <span id="brightVal">100%</span></label><input type="range" id="brightSlider" min="0" max="200" value="100" oninput="adjustBrightness();document.getElementById('brightVal').textContent=this.value+'%'"></div><div class="ctrl-row"><label>对比度 <span id="contrastVal">100%</span></label><input type="range" id="contrastSlider" min="0" max="200" value="100" oninput="adjustContrast();document.getElementById('contrastVal').textContent=this.value+'%'"></div><div class="ctrl-row"><label>饱和度 <span id="saturateVal">100%</span></label><input type="range" id="saturateSlider" min="0" max="200" value="100" oninput="adjustSaturation();document.getElementById('saturateVal').textContent=this.value+'%'"></div><button class="btn block" onclick="resetAdjust()" style="margin-top:8px">↩ 重置</button></div>
+      <div id="panelWatermark" class="props-panel"><h3>文字水印</h3><input type="text" id="watermarkText" placeholder="水印文字..." class="text-input" oninput="previewWatermark()"><div class="ctrl-row"><label>位置</label><select id="watermarkPos" onchange="previewWatermark()"><option value="br">右下角</option><option value="bl">左下角</option><option value="center">居中</option><option value="tile">平铺</option></select></div><div class="ctrl-row"><label>透明度 <span id="wmOpacityVal">30%</span></label><input type="range" id="wmOpacity" min="5" max="80" value="30" oninput="previewWatermark();document.getElementById('wmOpacityVal').textContent=this.value+'%'"></div><button class="btn primary block" onclick="applyWatermark()" style="margin-top:8px">✅ 应用水印</button><button class="btn block" onclick="removeWatermark()">🗑 清除水印</button></div>
+      <div id="panelCompress" class="props-panel"><h3>图片压缩</h3><div class="ctrl-row"><label>质量 <span id="qualityVal">80%</span></label><input type="range" id="qualitySlider" min="10" max="100" value="80" oninput="document.getElementById('qualityVal').textContent=this.value+'%'"></div><div class="export-info" id="compressInfo">选择质量后下载</div><button class="btn primary block" onclick="compressExport()" style="margin-top:8px">🗜 下载压缩版</button></div>
+
+      <div class="export-section">
+        <div id="panelExport"><h3>导出到电脑</h3>
+        <button class="btn primary block" onclick="exportGIF()" id="btnExportGIF" style="margin-bottom:6px;display:none">🎞️ 导出 GIF 动画</button>
+        <button class="btn primary block" onclick="exportForWechat()" style="margin-bottom:6px">🟢 微信表情导出 (240×240 PNG ≤500KB)</button>
+        <div class="export-row"><select id="exportFormat"><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option></select><button class="btn primary" onclick="exportImage()">下载</button></div><div class="export-info" id="exportInfo">-</div></div>
+      </div>
+    </aside>
   </div>
+</div>
 
-  <!-- 右侧：编辑预览 -->
-  <div class="panel panel-preview" id="panelPreview">
-    <div class="panel-title">编辑预览 <span id="editLabel"></span></div>
-    <div class="preview-container">
-      <canvas id="canvasPreview"></canvas>
-      <div class="preview-placeholder" id="previewPlaceholder">上传图片后开始编辑</div>
+<!-- 导出后弹窗 -->
+<div id="feedbackModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>💬 留个言吧</h3>
+      <button class="modal-close" onclick="closeFeedbackModal()">✕</button>
+    </div>
+    <p style="font-size:0.85em;color:#888;margin-bottom:10px">下载完成！有什么想说的？不写也没关系～</p>
+    <textarea id="fbMsg" placeholder="bug反馈、功能建议、随便唠..." maxlength="500" rows="3"></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
+      <button class="btn" onclick="closeFeedbackModal()">不了谢谢</button>
+      <button class="btn primary" onclick="submitFeedback()">发送留言</button>
     </div>
   </div>
 </div>
 
-<!-- 工具栏 -->
-<div class="toolbar">
-  <div class="tool-tabs" id="toolTabs">
-    <button class="tab active" data-tool="crop">✂ 裁剪缩放</button>
-    <button class="tab" data-tool="text">🖊 文字引擎</button>
-    <button class="tab" data-tool="bubble">💬 对话气泡</button>
-    <button class="tab" data-tool="collage">🖼 表情拼贴</button>
-    <button class="tab" data-tool="filter">🎭 搞怪滤镜</button>
-    <button class="tab" data-tool="bg">🔲 白底处理</button>
-    <button class="tab" data-tool="convert">🔄 格式转换</button>
-  </div>
-
-  <!-- 各工具面板 -->
-  <div class="tool-panels">
-
-    <!-- 裁剪缩放 -->
-    <div class="tool-panel active" id="panelCrop">
-      <div class="tool-row">
-        <button class="btn" onclick="setCropPreset(240,240)">240×240 表情主图</button>
-        <button class="btn" onclick="setCropPreset(120,120)">120×120 缩略图</button>
-        <button class="btn" onclick="setCropPreset(50,50)">50×50 图标</button>
-      </div>
-      <div class="tool-row">
-        <label>宽: <input type="number" id="cropW" value="240" min="1" max="4096" class="input-sm"></label>
-        <label>高: <input type="number" id="cropH" value="240" min="1" max="4096" class="input-sm"></label>
-        <button class="btn btn-primary" onclick="applyCrop()">裁剪</button>
-        <button class="btn" onclick="applyResize()">缩放</button>
-      </div>
-    </div>
-
-    <!-- 文字引擎 -->
-    <div class="tool-panel" id="panelText">
-      <div class="tool-row">
-        <input type="text" id="textInput" placeholder="输入文字..." class="input-lg">
-      </div>
-      <div class="tool-row style-grid" id="textStyles">
-        <button class="style-btn" data-style="white-black">白字黑描边<br><small>熊猫头经典</small></button>
-        <button class="style-btn" data-style="yellow-red">黄字红描边<br><small>暴漫咆哮体</small></button>
-        <button class="style-btn" data-style="vertical">竖排咆哮<br><small>我！！！不！！！</small></button>
-        <button class="style-btn" data-style="shadow">彩色阴影<br><small>可爱女生风</small></button>
-        <button class="style-btn" data-style="small-gray">小字备注<br><small>小声补充</small></button>
-      </div>
-      <div class="tool-row">
-        <button class="btn btn-primary" onclick="applyText()">加到图片上</button>
-        <button class="btn" onclick="clearText()">清除文字</button>
-      </div>
-      <p class="hint">文字加到图片后可拖拽调整位置</p>
-    </div>
-
-    <!-- 对话气泡 -->
-    <div class="tool-panel" id="panelBubble">
-      <div class="tool-row">
-        <input type="text" id="bubbleText" placeholder="气泡里的话..." class="input-lg">
-      </div>
-      <div class="tool-row style-grid" id="bubbleStyles">
-        <button class="style-btn" data-bubble="wechat-green">微信绿气泡<br><small>自己的消息</small></button>
-        <button class="style-btn" data-bubble="wechat-white">微信白气泡<br><small>对方的消息</small></button>
-        <button class="style-btn" data-bubble="comic">漫画气泡<br><small>经典风格</small></button>
-        <button class="style-btn" data-bubble="explosion">爆炸气泡<br><small>愤怒激动</small></button>
-        <button class="style-btn" data-bubble="thought">想法气泡<br><small>云朵形状</small></button>
-      </div>
-      <div class="tool-row">
-        <label>位置: <select id="bubblePos"><option value="top">上方</option><option value="bottom">下方</option></select></label>
-        <button class="btn btn-primary" onclick="applyBubble()">添加气泡</button>
-      </div>
-    </div>
-
-    <!-- 表情拼贴 -->
-    <div class="tool-panel" id="panelCollage">
-      <div class="tool-row">
-        <p class="hint">先上传第一张图（上面已上传），再选第二张图：</p>
-      </div>
-      <div class="tool-row">
-        <input type="file" id="collageFile2" accept="image/*" hidden>
-        <button class="btn" onclick="document.getElementById('collageFile2').click()">📁 选第二张图</button>
-        <span id="collageFile2Name" style="color:#888;font-size:0.85em;"></span>
-      </div>
-      <div class="tool-row style-grid" id="collageStyles">
-        <button class="style-btn" data-collage="left-right">左右对比<br><small>你以为 vs 实际</small></button>
-        <button class="style-btn" data-collage="top-bottom">上下对比<br><small>周一 vs 周五</small></button>
-        <button class="style-btn" data-collage="grid4">四宫格<br><small>2×2 拼贴</small></button>
-        <button class="style-btn" data-collage="corner">对角<br><small>大图+角落小图</small></button>
-      </div>
-      <div class="tool-row">
-        <button class="btn btn-primary" onclick="applyCollage()">拼贴</button>
-      </div>
-    </div>
-
-    <!-- 搞怪滤镜 -->
-    <div class="tool-panel" id="panelFilter">
-      <div class="tool-row style-grid" id="filterStyles">
-        <button class="style-btn" data-filter="lineart">黑白线稿<br><small>灵魂画手</small></button>
-        <button class="style-btn" data-filter="oldstyle">高饱和老年<br><small>长辈表情包</small></button>
-        <button class="style-btn" data-filter="pixel">像素风<br><small>复古游戏</small></button>
-        <button class="style-btn" data-filter="rough">毛边粗糙<br><small>低清重印</small></button>
-        <button class="style-btn" data-filter="emboss">浮雕<br><small>锦旗奖状</small></button>
-      </div>
-      <div class="tool-row">
-        <label>强度: <input type="range" id="filterStrength" min="10" max="100" value="50" class="slider"></label>
-      </div>
-      <div class="tool-row">
-        <button class="btn btn-primary" onclick="applyFilter()">应用滤镜</button>
-        <button class="btn" onclick="resetFilter()">撤销滤镜</button>
-      </div>
-      <p class="hint">滤镜效果叠加在原图上，点"撤销滤镜"回到上一步</p>
-    </div>
-
-    <!-- 白底处理 -->
-    <div class="tool-panel" id="panelBg">
-      <div class="tool-row">
-        <button class="btn btn-primary" onclick="applyWhiteBg()">🔲 杂底→纯白底</button>
-        <button class="btn" onclick="applyTransparentToWhite()">🔄 透明→白底（防微信黑底）</button>
-      </div>
-      <p class="hint">白底处理：检测图片边缘颜色，将背景替换为纯白 #FFFFFF<br>透明→白底：在透明PNG下垫一层白色，防微信渲染黑底</p>
-    </div>
-
-    <!-- 格式转换 -->
-    <div class="tool-panel" id="panelConvert">
-      <div class="tool-row">
-        <label>输出格式:
-          <select id="convertFormat">
-            <option value="image/png">PNG</option>
-            <option value="image/jpeg">JPEG</option>
-            <option value="image/webp">WebP</option>
-            <option value="image/gif">GIF</option>
-          </select>
-        </label>
-        <label>质量: <input type="range" id="convertQuality" min="10" max="100" value="92" class="slider"></label>
-      </div>
-      <div class="tool-row">
-        <button class="btn btn-primary" onclick="applyConvert()">转换并下载</button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- 底部状态栏 -->
-<div class="status-bar">
-  <button class="btn btn-undo" onclick="undo()" title="撤销 (Ctrl+Z)">↩</button>
-  <button class="btn btn-redo" onclick="redo()" title="重做 (Ctrl+Y)">↪</button>
-  <span id="statusDims">- × -</span>
-  <span id="statusFormat">-</span>
-  <span id="statusSize">-</span>
-  <span style="flex:1"></span>
-  <button class="btn btn-primary" onclick="downloadImage()">💾 下载图片</button>
-  <button class="btn btn-reset" onclick="resetAll()">🔄 开始新图</button>
-</div>
-
+<script src="gif.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>靓图 · 用户看板</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f5f5f5;
+    color: #333;
+    padding: 20px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  /* 指标卡片 */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .card .label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  .card .value {
+    font-size: 28px;
+    font-weight: 700;
+  }
+  .card .value.blue  { color: #3b82f6; }
+  .card .value.green { color: #10b981; }
+  .card .value.red   { color: #ef4444; }
+
+  /* 板块 */
+  .section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .section h2 {
+    font-size: 15px;
+    margin-bottom: 12px;
+    color: #555;
+  }
+
+  /* 功能统计表 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th, td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+  }
+  th {
+    color: #888;
+    font-weight: 500;
+  }
+  td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 事件列表 */
+  .event-list {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .event-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+  }
+  .event-row .time {
+    color: #aaa;
+    width: 80px;
+    flex-shrink: 0;
+  }
+  .event-row .uid {
+    color: #888;
+    width: 120px;
+    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .event-row .action {
+    font-weight: 600;
+    color: #3b82f6;
+    width: 100px;
+    flex-shrink: 0;
+  }
+  .event-row .detail {
+    color: #666;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .loading { color: #aaa; text-align: center; padding: 30px; }
+  .error   { color: #ef4444; text-align: center; padding: 30px; }
+  .refresh { 
+    display: inline-block;
+    margin-left: 12px;
+    font-size: 12px;
+    color: #3b82f6;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge.green { background: #d1fae5; color: #065f46; }
+  .badge.blue  { background: #dbeafe; color: #1e40af; }
+  .badge.gray  { background: #f3f4f6; color: #6b7280; }
+</style>
+</head>
+<body>
+
+<h1>📊 靓图用户看板</h1>
+<div class="subtitle">
+  匿名追踪 · 隐私安全 · 自动刷新 <span class="refresh" onclick="loadData()">手动刷新</span>
+</div>
+
+<div id="cards" class="cards"><div class="loading">加载中...</div></div>
+
+<div class="section">
+  <h2>📈 功能使用排行</h2>
+  <div id="actionTable"><div class="loading">加载中...</div></div>
+</div>
+
+<div class="section">
+  <h2>🕐 最近事件</h2>
+  <div id="eventList" class="event-list"><div class="loading">加载中...</div></div>
+</div>
+
+<script>
+// 自动刷新（每30秒）
+var autoRefresh = setInterval(loadData, 30000);
+
+function loadData() {
+  fetch('/api/stats')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      renderCards(data.summary);
+      renderActionTable(data.actionCounts);
+      renderEvents(data.recentEvents);
+    })
+    .catch(function(err) {
+      document.getElementById('cards').innerHTML = '<div class="error">无法连接后台，检查Vercel KV配置</div>';
+      console.error(err);
+    });
+}
+
+function renderCards(s) {
+  var html = '';
+
+  // 今天访问
+  html += card('👀 今天访问', s.todayVisits || 0, 'blue');
+  // 今天下载
+  html += card('📥 今天下载', s.todayDownloads || 0, 'green');
+  // 总用户
+  html += card('👤 总匿名用户', s.totalUsers || 0, 'blue');
+  // 走完全程比例
+  var rate = s.completionRate || 0;
+  var color = rate > 30 ? 'green' : rate > 10 ? 'blue' : 'red';
+  html += card('✅ 走完全程', (s.completedSessions || 0) + '/' + (s.totalSessions || 0) + ' (' + rate + '%)', color);
+
+  // 今天总事件
+  html += card('📊 今天事件', s.todayEvents || 0, 'blue');
+
+  document.getElementById('cards').innerHTML = '<div class="cards">' + html + '</div>';
+}
+
+function card(label, value, color) {
+  return '<div class="card"><div class="label">' + label + '</div><div class="value ' + color + '">' + value + '</div></div>';
+}
+
+function renderActionTable(counts) {
+  var items = [];
+  for (var k in counts) {
+    items.push({ key: k, count: counts[k] });
+  }
+  items.sort(function(a,b) { return b.count - a.count; });
+
+  if (items.length === 0) {
+    document.getElementById('actionTable').innerHTML = '<div class="loading">暂无数据</div>';
+    return;
+  }
+
+  var html = '<table><tr><th>功能</th><th>页面</th><th class="num">次数</th></tr>';
+  for (var i = 0; i < items.length; i++) {
+    var parts = items[i].key.split(':');
+    var page = parts[0] || '-';
+    var action = parts[1] || items[i].key;
+    var badge = '';
+    if (action === 'download') badge = ' <span class="badge green">核心</span>';
+    if (action === 'page_view') badge = ' <span class="badge blue">浏览</span>';
+    html += '<tr><td>' + action + badge + '</td><td>' + page + '</td><td class="num">' + items[i].count + '</td></tr>';
+  }
+  html += '</table>';
+  document.getElementById('actionTable').innerHTML = html;
+}
+
+function renderEvents(events) {
+  if (!events || events.length === 0) {
+    document.getElementById('eventList').innerHTML = '<div class="loading">暂无事件</div>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < events.length; i++) {
+    var e = events[i];
+    var time = (e.ts || '').slice(11, 19);
+    var uid = (e.uid || '').slice(0, 16);
+    var page = e.page || '-';
+    var detail = e.meta ? JSON.stringify(e.meta).slice(0, 60) : '';
+    html += '<div class="event-row">'
+      + '<span class="time">' + time + '</span>'
+      + '<span class="uid" title="' + e.uid + '">' + uid + '</span>'
+      + '<span class="action">' + page + ':' + e.action + '</span>'
+      + '<span class="detail">' + detail + '</span>'
+      + '</div>';
+  }
+  document.getElementById('eventList').innerHTML = html;
+}
+
+// 初始加载
+loadData();
+</script>
+</body>
+</html>

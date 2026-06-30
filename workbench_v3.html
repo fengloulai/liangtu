@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>靓图工作台 v3 — fabric.js 架构测试</title>
+<script src="https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js"></script>
+<style>
+:root { --brand: #7c3aed; --bg: #f5f3ff; --panel-bg: #fff; --text: #1e1b4b; --border: #e0e7ff; --radius: 10px; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); height:100vh; overflow:hidden; }
+
+/* 顶部栏 */
+.toolbar { display:flex; align-items:center; gap:6px; padding:8px 16px; background:var(--panel-bg); border-bottom:1px solid var(--border); }
+.toolbar .logo { font-weight:700; font-size:18px; color:var(--brand); margin-right:16px; }
+.tool-btn { padding:6px 14px; border:1px solid var(--border); border-radius:6px; background:#fff; cursor:pointer; font-size:13px; transition:all .15s; }
+.tool-btn:hover { border-color:var(--brand); color:var(--brand); }
+.tool-btn.active { background:var(--brand); color:#fff; border-color:var(--brand); }
+.tool-btn.danger { color:#dc2626; border-color:#fecaca; }
+.tool-btn.danger:hover { background:#fef2f2; }
+.sep { width:1px; height:24px; background:var(--border); margin:0 4px; }
+
+/* 主体 */
+.main { display:flex; height:calc(100vh - 49px); }
+.sidebar { width:200px; background:var(--panel-bg); border-right:1px solid var(--border); padding:12px; overflow-y:auto; }
+.sidebar h3 { font-size:12px; text-transform:uppercase; color:#6b7280; margin-bottom:8px; }
+.tpl-item { padding:10px; border:2px solid var(--border); border-radius:8px; margin-bottom:8px; cursor:pointer; text-align:center; font-size:12px; transition:all .15s; }
+.tpl-item:hover { border-color:var(--brand); }
+.tpl-item.active { border-color:var(--brand); background:#f5f3ff; }
+.tpl-item .emoji { font-size:28px; display:block; margin-bottom:4px; }
+
+.canvas-wrap { flex:1; display:flex; align-items:center; justify-content:center; background:#e8e5f0; position:relative; }
+.canvas-wrap .drop-hint { position:absolute; color:#9ca3af; font-size:14px; pointer-events:none; }
+
+.props { width:240px; background:var(--panel-bg); border-left:1px solid var(--border); padding:12px; overflow-y:auto; }
+.props h3 { font-size:12px; text-transform:uppercase; color:#6b7280; margin-bottom:8px; }
+.props label { display:block; font-size:12px; color:#4b5563; margin-bottom:3px; margin-top:10px; }
+.props input, .props select { width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:6px; font-size:13px; }
+.props input[type="color"] { height:34px; padding:2px; cursor:pointer; }
+.prop-row { display:flex; gap:8px; }
+.prop-row > * { flex:1; }
+.props .empty { color:#9ca3ab; font-size:13px; text-align:center; margin-top:40px; }
+.props .obj-type { font-size:11px; color:var(--brand); font-weight:600; margin-bottom:8px; }
+
+/* 底部状态栏 */
+.statusbar { display:flex; align-items:center; padding:4px 16px; background:var(--panel-bg); border-top:1px solid var(--border); font-size:11px; color:#9ca3ab; gap:16px; }
+</style>
+</head>
+<body>
+
+<!-- 工具栏 -->
+<div class="toolbar">
+  <span class="logo">⚡ 靓图工作台</span>
+  <button class="tool-btn active" data-tool="select">🖱 选择</button>
+  <button class="tool-btn" data-tool="text">✏️ 文字</button>
+  <button class="tool-btn" data-tool="rect">⬜ 矩形</button>
+  <button class="tool-btn" data-tool="circle">⭕ 圆形</button>
+  <span class="sep"></span>
+  <button class="tool-btn" id="btnUpload">📁 上传图片</button>
+  <input type="file" id="fileInput" accept="image/*" hidden>
+  <span class="sep"></span>
+  <button class="tool-btn" id="btnUndo">↩ 撤销</button>
+  <button class="tool-btn" id="btnRedo">↪ 重做</button>
+  <span class="sep"></span>
+  <button class="tool-btn" id="btnDelete">🗑 删除选中</button>
+  <button class="tool-btn" id="btnClear">清空画布</button>
+  <span class="sep"></span>
+  <button class="tool-btn" id="btnExport">💾 导出PNG</button>
+  <span style="margin-left:auto;font-size:12px;color:#9ca3ab;">fabric.js 底座 | 架构测试</span>
+</div>
+
+<!-- 主体 -->
+<div class="main">
+  <!-- 左侧模板 -->
+  <div class="sidebar" id="tplSidebar">
+    <h3>🧩 快速模板</h3>
+    <div class="tpl-item active" data-tpl="blank">
+      <span class="emoji">📄</span>空白画布
+    </div>
+    <div class="tpl-item" data-tpl="meme1">
+      <span class="emoji">🐼</span>熊猫头经典
+    </div>
+    <div class="tpl-item" data-tpl="meme2">
+      <span class="emoji">🐶</span>Doge 表情
+    </div>
+    <div class="tpl-item" data-tpl="sticker1">
+      <span class="emoji">😤</span>微信表情240
+    </div>
+    <div class="tpl-item" data-tpl="sticker2">
+      <span class="emoji">💬</span>聊天框模板
+    </div>
+  </div>
+
+  <!-- 画布 -->
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="drop-hint" id="dropHint">拖入图片开始，或点击左侧模板</div>
+    <canvas id="c"></canvas>
+  </div>
+
+  <!-- 右侧属性面板 -->
+  <div class="props" id="propsPanel">
+    <h3>📐 属性</h3>
+    <div class="empty" id="propEmpty">选中一个对象<br>查看属性</div>
+    <div id="propContent" style="display:none">
+      <div class="obj-type" id="propType"></div>
+      <label>X 坐标</label><input type="number" id="propX" step="1">
+      <label>Y 坐标</label><input type="number" id="propY" step="1">
+      <label>宽度</label><input type="number" id="propW" step="1">
+      <label>高度</label><input type="number" id="propH" step="1">
+      <label>角度</label><input type="number" id="propAngle" step="1">
+      <label>透明度</label><input type="range" id="propOpacity" min="0" max="1" step="0.05">
+      <div id="propTextFields" style="display:none">
+        <label>文字内容</label><input type="text" id="propText">
+        <label>字号</label><input type="number" id="propFontSize" min="8" max="200">
+        <label>颜色</label><input type="color" id="propColor">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 状态栏 -->
+<div class="statusbar">
+  <span id="statusObjects">对象: 0</span>
+  <span id="statusSelected">选中: 无</span>
+  <span id="statusHistory">历史: 0</span>
+</div>
+
+<script>
+// ===== 状态机 =====
+const STATE = {
+  tool: 'select',
+  history: [],
+  historyIdx: -1,
+  maxHistory: 50
+};
+
+// ===== fabric.js 画布初始化 =====
+const canvas = new fabric.Canvas('c', {
+  width: 600,
+  height: 500,
+  backgroundColor: '#ffffff',
+  selection: true,
+  preserveObjectStacking: true
+});
+
+// ===== 工具切换 =====
+document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    STATE.tool = btn.dataset.tool;
+    canvas.isDrawingMode = false;
+    canvas.selection = (STATE.tool === 'select');
+    canvas.defaultCursor = (STATE.tool === 'select') ? 'default' : 'crosshair';
+    updateStatus();
+  });
+});
+
+// ===== 画布点击 → 根据工具创建对象 =====
+canvas.on('mouse:down', function(opt) {
+  if (STATE.tool === 'select') return;
+  if (opt.target) return; // 点击已有对象不创建
+
+  const pointer = canvas.getPointer(opt.e);
+  let obj = null;
+
+  if (STATE.tool === 'text') {
+    obj = new fabric.IText('双击编辑文字', {
+      left: pointer.x, top: pointer.y,
+      fontSize: 32, fontFamily: 'Microsoft YaHei',
+      fill: '#ffffff', stroke: '#000000', strokeWidth: 3,
+      fontWeight: 'bold', textAlign: 'center'
+    });
+  } else if (STATE.tool === 'rect') {
+    obj = new fabric.Rect({
+      left: pointer.x - 60, top: pointer.y - 40,
+      width: 120, height: 80,
+      fill: '#7c3aed', rx: 8, ry: 8
+    });
+  } else if (STATE.tool === 'circle') {
+    obj = new fabric.Circle({
+      left: pointer.x - 50, top: pointer.y - 50,
+      radius: 50, fill: '#f59e0b'
+    });
+  }
+
+  if (obj) {
+    canvas.add(obj);
+    canvas.setActiveObject(obj);
+    saveHistory();
+  }
+});
+
+// ===== 选中对象 → 属性面板更新 =====
+canvas.on('selection:created', updateProps);
+canvas.on('selection:updated', updateProps);
+canvas.on('selection:cleared', () => { showPropEmpty(); updateStatus(); });
+canvas.on('object:modified', () => { saveHistory(); updateProps(); });
+
+function updateProps() {
+  const obj = canvas.getActiveObject();
+  if (!obj) { showPropEmpty(); return; }
+
+  document.getElementById('propEmpty').style.display = 'none';
+  document.getElementById('propContent').style.display = 'block';
+  document.getElementById('propType').textContent = 
+    obj.type === 'i-text' ? '✏️ 文字对象' :
+    obj.type === 'rect' ? '⬜ 矩形对象' :
+    obj.type === 'circle' ? '⭕ 圆形对象' :
+    obj.type === 'image' ? '🖼 图片对象' : '📦 ' + obj.type;
+
+  document.getElementById('propX').value = Math.round(obj.left);
+  document.getElementById('propY').value = Math.round(obj.top);
+  document.getElementById('propW').value = Math.round(obj.width * (obj.scaleX || 1));
+  document.getElementById('propH').value = Math.round(obj.height * (obj.scaleY || 1));
+  document.getElementById('propAngle').value = obj.angle || 0;
+  document.getElementById('propOpacity').value = obj.opacity || 1;
+
+  // 文字特有属性
+  const isText = (obj.type === 'i-text' || obj.type === 'text');
+  document.getElementById('propTextFields').style.display = isText ? 'block' : 'none';
+  if (isText) {
+    document.getElementById('propText').value = obj.text || '';
+    document.getElementById('propFontSize').value = obj.fontSize || 32;
+    document.getElementById('propColor').value = obj.fill || '#000000';
+  }
+
+  updateStatus();
+}
+
+function showPropEmpty() {
+  document.getElementById('propEmpty').style.display = 'block';
+  document.getElementById('propContent').style.display = 'none';
+}
+
+// ===== 属性面板输入 → 更新对象 =====
+['propX','propY','propW','propH','propAngle'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function() {
+    const obj = canvas.getActiveObject();
+    if (!obj) return;
+    if (id === 'propX') obj.set('left', parseFloat(this.value));
+    if (id === 'propY') obj.set('top', parseFloat(this.value));
+    if (id === 'propW') obj.set('scaleX', parseFloat(this.value) / obj.width);
+    if (id === 'propH') obj.set('scaleY', parseFloat(this.value) / obj.height);
+    if (id === 'propAngle') obj.angle = parseFloat(this.value);
+    obj.setCoords();
+    canvas.renderAll();
+  });
+});
+
+document.getElementById('propOpacity').addEventListener('input', function() {
+  const obj = canvas.getActiveObject();
+  if (!obj) return;
+  obj.set('opacity', parseFloat(this.value));
+  canvas.renderAll();
+});
+
+document.getElementById('propText').addEventListener('input', function() {
+  const obj = canvas.getActiveObject();
+  if (obj && (obj.type === 'i-text' || obj.type === 'text')) {
+    obj.set('text', this.value);
+    canvas.renderAll();
+  }
+});
+document.getElementById('propFontSize').addEventListener('input', function() {
+  const obj = canvas.getActiveObject();
+  if (obj && (obj.type === 'i-text' || obj.type === 'text')) {
+    obj.set('fontSize', parseInt(this.value));
+    canvas.renderAll();
+  }
+});
+document.getElementById('propColor').addEventListener('input', function() {
+  const obj = canvas.getActiveObject();
+  if (obj && (obj.type === 'i-text' || obj.type === 'text')) {
+    obj.set('fill', this.value);
+    canvas.renderAll();
+  }
+});
+
+// ===== 历史记录 =====
+function saveHistory() {
+  const json = JSON.stringify(canvas.toJSON());
+  STATE.history = STATE.history.slice(0, STATE.historyIdx + 1);
+  STATE.history.push(json);
+  if (STATE.history.length > STATE.maxHistory) STATE.history.shift();
+  STATE.historyIdx = STATE.history.length - 1;
+  updateStatus();
+}
+
+function undo() {
+  if (STATE.historyIdx <= 0) return;
+  STATE.historyIdx--;
+  loadHistory();
+}
+
+function redo() {
+  if (STATE.historyIdx >= STATE.history.length - 1) return;
+  STATE.historyIdx++;
+  loadHistory();
+}
+
+function loadHistory() {
+  canvas.loadFromJSON(STATE.history[STATE.historyIdx], () => {
+    canvas.renderAll();
+    updateStatus();
+  });
+}
+
+// ===== 模板系统 =====
+document.querySelectorAll('.tpl-item').forEach(item => {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.tpl-item').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+    applyTemplate(this.dataset.tpl);
+  });
+});
+
+function applyTemplate(tpl) {
+  canvas.clear();
+  canvas.backgroundColor = '#ffffff';
+
+  if (tpl === 'blank') {
+    // 什么都不做，空白画布
+  } else if (tpl === 'meme1') {
+    // 熊猫头经典
+    const bg = new fabric.Rect({ left:0, top:0, width:600, height:500, fill:'#ffffff', selectable:false, evented:false });
+    canvas.add(bg);
+    const topText = new fabric.IText('当你以为自己是', { left:300, top:30, fontSize:28, fontFamily:'SimHei', fill:'#000', fontWeight:'bold', textAlign:'center', originX:'center' });
+    canvas.add(topText);
+    const bottomText = new fabric.IText('其实在别人眼里', { left:300, top:440, fontSize:28, fontFamily:'SimHei', fill:'#000', fontWeight:'bold', textAlign:'center', originX:'center' });
+    canvas.add(bottomText);
+  } else if (tpl === 'meme2') {
+    const bg = new fabric.Rect({ left:0, top:0, width:600, height:500, fill:'#fef3c7', selectable:false, evented:false });
+    canvas.add(bg);
+    const text1 = new fabric.IText('such 架构', { left:300, top:200, fontSize:40, fontFamily:'Impact,sans-serif', fill:'#1e40af', fontWeight:'bold', textAlign:'center', originX:'center' });
+    canvas.add(text1);
+    const text2 = new fabric.IText('very 模块化', { left:300, top:260, fontSize:36, fontFamily:'Impact,sans-serif', fill:'#7c3aed', textAlign:'center', originX:'center' });
+    canvas.add(text2);
+  } else if (tpl === 'sticker1') {
+    canvas.setWidth(240);
+    canvas.setHeight(240);
+    canvas.setZoom(2);
+    canvas.absolutePan({x:-60, y:-20});
+  } else if (tpl === 'sticker2') {
+    const bubble = new fabric.Rect({ left:50, top:50, width:400, height:200, fill:'#fff', stroke:'#d1d5db', strokeWidth:2, rx:20, ry:20, selectable:false, evented:false });
+    canvas.add(bubble);
+    const txt = new fabric.IText('在这里输入你的文字', { left:250, top:140, fontSize:24, fontFamily:'Microsoft YaHei', fill:'#374151', textAlign:'center', originX:'center', originY:'center' });
+    canvas.add(txt);
+  }
+
+  canvas.renderAll();
+  saveHistory();
+  updateStatus();
+}
+
+// ===== 上传图片 =====
+document.getElementById('btnUpload').addEventListener('click', () => document.getElementById('fileInput').click());
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    fabric.Image.fromURL(ev.target.result, function(img) {
+      img.scaleToWidth(300);
+      img.set({ left: 150, top: 100 });
+      canvas.add(img);
+      canvas.setActiveObject(img);
+      saveHistory();
+      updateStatus();
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+// ===== 按钮事件 =====
+document.getElementById('btnUndo').addEventListener('click', undo);
+document.getElementById('btnRedo').addEventListener('click', redo);
+document.getElementById('btnDelete').addEventListener('click', () => {
+  const obj = canvas.getActiveObject();
+  if (obj) { canvas.remove(obj); canvas.discardActiveObject(); saveHistory(); updateStatus(); }
+});
+document.getElementById('btnClear').addEventListener('click', () => {
+  if (confirm('清空画布？')) { canvas.clear(); canvas.backgroundColor = '#ffffff'; saveHistory(); updateStatus(); showPropEmpty(); }
+});
+document.getElementById('btnExport').addEventListener('click', () => {
+  const dataURL = canvas.toDataURL({ format: 'png', multiplier: 2 });
+  const link = document.createElement('a');
+  link.download = 'liangtu_export.png';
+  link.href = dataURL;
+  link.click();
+});
+
+// ===== 键盘快捷键 =====
+document.addEventListener('keydown', function(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); redo(); }
+  if (e.key === 'Delete' || e.key === 'Backspace') { 
+    const obj = canvas.getActiveObject();
+    if (obj && e.target.tagName !== 'INPUT') { canvas.remove(obj); canvas.discardActiveObject(); saveHistory(); updateStatus(); }
+  }
+});
+
+// ===== 拖拽上传 =====
+const canvasWrap = document.getElementById('canvasWrap');
+canvasWrap.addEventListener('dragover', e => e.preventDefault());
+canvasWrap.addEventListener('drop', function(e) {
+  e.preventDefault();
+  document.getElementById('dropHint').style.display = 'none';
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    fabric.Image.fromURL(ev.target.result, function(img) {
+      img.scaleToWidth(350);
+      img.set({ left: 125, top: 75 });
+      canvas.add(img);
+      canvas.setActiveObject(img);
+      saveHistory();
+      updateStatus();
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+// ===== 状态栏 =====
+function updateStatus() {
+  document.getElementById('statusObjects').textContent = '对象: ' + canvas.getObjects().length;
+  const active = canvas.getActiveObject();
+  document.getElementById('statusSelected').textContent = active 
+    ? '选中: ' + (active.type === 'i-text' ? '文字' : active.type) 
+    : '选中: 无';
+  document.getElementById('statusHistory').textContent = 
+    '历史: ' + (STATE.historyIdx + 1) + '/' + STATE.history.length;
+}
+
+// ===== 启动 =====
+saveHistory();
+updateStatus();
+</script>
+</body>
+</html>

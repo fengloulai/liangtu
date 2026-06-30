@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>靓图 - 在线图片设计工具箱 | 免费下载，无需注册</title>
+<meta name="description" content="免费下载，无需注册，直接拖取图片。微信表情包制作、电商图片处理，100%本地处理。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%237c3aed'/><stop offset='100%25' style='stop-color:%23a78bfa'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><text y='68' x='50' text-anchor='middle' font-size='55'>🎨</text></svg>">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #fff; color: #1a1a2e;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* ===== Dev Tag (in nav) ===== */
+  .dev-tag {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: #fff; padding: 5px 16px;
+    border-radius: 20px; font-size: 0.82em; font-weight: 600;
+    box-shadow: 0 2px 8px rgba(245,158,11,0.2);
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1200px; margin: 0 auto;
+    padding: 20px 40px;
+  }
+  .nav-logo {
+    font-size: 1.4em; font-weight: 800; color: #111;
+    text-decoration: none; letter-spacing: -1px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #7c3aed;
+  }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    color: #555; text-decoration: none; font-size: 0.9em; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #7c3aed; }
+
+  /* ===== Hero ===== */
+  .hero {
+    max-width: 1200px; margin: 0 auto;
+    padding: 40px 40px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .hero-text h1 {
+    font-size: 2.5em; font-weight: 800; color: #111;
+    letter-spacing: -1.5px; line-height: 1.25; margin-bottom: 14px;
+  }
+  .hero-text p {
+    font-size: 1em; color: #666; line-height: 1.7; margin-bottom: 28px;
+  }
+  .hero-buttons { display: flex; gap: 14px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 12px 28px; border-radius: 10px;
+    font-size: 0.95em; font-weight: 600; text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: #7c3aed; color: #fff;
+  }
+  .btn-primary:hover {
+    background: #6d28d9; transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+  }
+  .btn-outline {
+    background: #fff; color: #333; border: 1.5px solid #ddd;
+  }
+  .btn-outline:hover { border-color: #7c3aed; color: #7c3aed; }
+
+  /* ===== Hero Illustration ===== */
+  .hero-illustration {
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .hero-illustration svg {
+    width: 100%; max-width: 420px; height: auto;
+  }
+
+  /* ===== Tools Section ===== */
+  .tools {
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 40px 100px;
+  }
+  .tools h2 {
+    text-align: center; font-size: 1.5em; font-weight: 700;
+    color: #111; margin-bottom: 8px; letter-spacing: -0.5px;
+  }
+  .tools .section-sub {
+    text-align: center; color: #999; font-size: 0.92em; margin-bottom: 44px;
+  }
+  .tools-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .tool-entry {
+    border-radius: 16px; overflow: hidden;
+    text-decoration: none; color: inherit;
+    border: 1px solid #eee; background: #fff;
+    transition: all 0.3s ease;
+  }
+  .tool-entry:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.07);
+    transform: translateY(-2px); border-color: #ddd;
+  }
+  .tool-entry .te-preview {
+    width: 100%; aspect-ratio: 16/10;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4.5em;
+  }
+  .tool-entry .te-preview.sticker-bg {
+    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  }
+  .tool-entry .te-preview.ecom-bg {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  }
+  .tool-entry .te-info {
+    padding: 22px 26px;
+  }
+  .tool-entry .te-info h3 {
+    font-size: 1.1em; font-weight: 700; margin-bottom: 5px; color: #111;
+  }
+  .tool-entry .te-info p {
+    font-size: 0.87em; color: #888; line-height: 1.6;
+  }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center; padding: 28px 20px;
+    color: #aaa; font-size: 0.8em;
+    border-top: 1px solid #f3f4f6;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: 1fr; gap: 32px;
+      padding: 30px 20px 60px;
+    }
+    .hero-illustration { order: -1; }
+    .hero-illustration svg { max-width: 280px; }
+    .hero-text h1 { font-size: 1.7em; }
+    .tools-grid { grid-template-columns: 1fr; }
+    .nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <span class="dot"></span>靓图
+  </a>
+  <div class="nav-links">
+    <span class="dev-tag">⚡ 持续开发中</span>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-text">
+    <h1>免费下载，<br>无需注册，<br>直接拖取图片</h1>
+    <p>所有图片处理都在浏览器本地完成，不上传服务器。打开网页就能用，关掉网络照样能编辑。</p>
+    <div class="hero-buttons">
+      <a href="sticker/" class="btn btn-primary">开始创作 →</a>
+      <a href="#tools" class="btn btn-outline">看看能做什么</a>
+    </div>
+  </div>
+  <div class="hero-illustration">
+    <svg viewBox="0 0 400 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background circle decoration -->
+      <circle cx="200" cy="240" r="180" fill="#f5f3ff" opacity="0.6"/>
+      <circle cx="280" cy="160" r="120" fill="#fdf2f8" opacity="0.5"/>
+      
+      <!-- Hair - flowing back -->
+      <ellipse cx="200" cy="130" rx="95" ry="120" fill="#2d1b4e"/>
+      <ellipse cx="160" cy="170" rx="55" ry="90" fill="#3d2b5e"/>
+      <ellipse cx="240" cy="170" rx="55" ry="90" fill="#3d2b5e"/>
+      <!-- Hair wave details -->
+      <path d="M105 150 Q120 200 130 250 Q140 300 125 340" stroke="#4a3770" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M295 150 Q280 200 270 250 Q260 300 275 340" stroke="#4a3770" stroke-width="3" fill="none" stroke-linecap="round"/>
+      
+      <!-- Neck -->
+      <rect x="178" y="270" width="44" height="50" rx="20" fill="#f5d5c8"/>
+      
+      <!-- Face -->
+      <ellipse cx="200" cy="210" rx="65" ry="75" fill="#fce4d6"/>
+      
+      <!-- Cheek blush -->
+      <ellipse cx="160" cy="230" rx="18" ry="10" fill="#f4c4b0" opacity="0.5"/>
+      <ellipse cx="240" cy="230" rx="18" ry="10" fill="#f4c4b0" opacity="0.5"/>
+      
+      <!-- Eyes -->
+      <ellipse cx="175" cy="210" rx="14" ry="8" fill="#fff"/>
+      <ellipse cx="225" cy="210" rx="14" ry="8" fill="#fff"/>
+      <circle cx="178" cy="210" r="6" fill="#3d2b5e"/>
+      <circle cx="228" cy="210" r="6" fill="#3d2b5e"/>
+      <circle cx="180" cy="208" r="2" fill="#fff"/>
+      <circle cx="230" cy="208" r="2" fill="#fff"/>
+      <!-- Eyelashes -->
+      <path d="M163 204 Q165 198 170 202" stroke="#2d1b4e" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M237 204 Q235 198 230 202" stroke="#2d1b4e" stroke-width="2" fill="none" stroke-linecap="round"/>
+      
+      <!-- Eyebrows -->
+      <path d="M162 195 Q175 188 190 192" stroke="#2d1b4e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M238 195 Q225 188 210 192" stroke="#2d1b4e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      
+      <!-- Nose -->
+      <path d="M200 215 Q198 225 195 228 Q200 230 205 228 Q202 225 200 215" fill="#e8c4b0"/>
+      
+      <!-- Mouth - gentle smile -->
+      <path d="M185 245 Q192 255 200 256 Q208 255 215 245" stroke="#d4856b" stroke-width="2.5" fill="#f0a090" stroke-linecap="round"/>
+      
+      <!-- Body / shoulders -->
+      <path d="M140 320 Q120 350 110 400 Q130 420 160 420 L240 420 Q270 420 290 400 Q280 350 260 320" 
+            fill="#7c3aed" opacity="0.12"/>
+      <!-- Clothing collar -->
+      <path d="M155 320 Q200 340 245 320" stroke="#7c3aed" stroke-width="2" fill="none" opacity="0.3"/>
+      <!-- Clothing body -->
+      <path d="M150 330 Q130 380 120 440 L140 460 L260 460 L280 440 Q270 380 250 330" 
+            fill="#7c3aed" opacity="0.1"/>
+      
+      <!-- Decorative dots around -->
+      <circle cx="80" cy="100" r="4" fill="#7c3aed" opacity="0.3"/>
+      <circle cx="320" cy="80" r="5" fill="#ec4899" opacity="0.3"/>
+      <circle cx="350" cy="200" r="3" fill="#7c3aed" opacity="0.2"/>
+      <circle cx="60" cy="280" r="4" fill="#ec4899" opacity="0.25"/>
+      <circle cx="340" cy="350" r="4" fill="#7c3aed" opacity="0.2"/>
+      
+      <!-- Earrings -->
+      <circle cx="135" cy="220" r="4" fill="#c4b5fd"/>
+      <circle cx="265" cy="220" r="4" fill="#c4b5fd"/>
+    </svg>
+  </div>
+</section>
+
+<!-- Tools -->
+<section class="tools" id="tools">
+  <h2>两个入口，覆盖日常图片需求</h2>
+  <p class="section-sub">所有工具都在浏览器本地运行，图片不会离开你的电脑</p>
+
+  <div class="tools-grid">
+    <a href="sticker/" class="tool-entry">
+      <div class="te-preview sticker-bg">🎭</div>
+      <div class="te-info">
+        <h3>微信表情包</h3>
+        <p>拖入图片 → 添加文字 → 调字体描边颜色 → 一键导出标准尺寸。支持14款中文字体，白字黑边、咆哮黄字多种风格。</p>
+      </div>
+    </a>
+    <a href="compress/" class="tool-entry">
+      <div class="te-preview ecom-bg">🛒</div>
+      <div class="te-info">
+        <h3>电商改图</h3>
+        <p>图片压缩、自由裁剪、添加水印、AI抠图——电商图片一站式处理。拖拽调质量，实时预览效果。</p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  靓图 liangtu.cc · 100%本地处理 · 零上传 · ICP备案号：DICPD2026025465D-1
+</footer>
+
+</body>
+</html>
